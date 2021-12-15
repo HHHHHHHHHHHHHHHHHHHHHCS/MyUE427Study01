@@ -38,4 +38,17 @@ void AMainPlayer::Tick(float DeltaTime)
 void AMainPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	check(PlayerInputComponent);
+
+	PlayerInputComponent->BindAxis("MoveForward",this,&AMainPlayer::MoveForward);
+	PlayerInputComponent->BindAxis("MoveRight",this,&AMainPlayer::MoveRight);
+
+}
+
+void AMainPlayer::MoveForward(float value)
+{
+}
+
+void AMainPlayer::MoveRight(float value)
+{
 }
