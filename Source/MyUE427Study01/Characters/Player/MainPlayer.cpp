@@ -15,9 +15,11 @@ AMainPlayer::AMainPlayer()
 	springArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	springArm->SetupAttachment(GetRootComponent());
 	springArm->TargetArmLength = 600.0f;
+	springArm->bUsePawnControlRotation = true;
 
 	followCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	followCamera->SetupAttachment(springArm, USpringArmComponent::SocketName);
+	followCamera->bUsePawnControlRotation = true;
 
 	GetCapsuleComponent()->SetCapsuleSize(35.0f, 100.0f);
 }
@@ -40,15 +42,19 @@ void AMainPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	check(PlayerInputComponent);
 
-	PlayerInputComponent->BindAxis("MoveForward",this,&AMainPlayer::MoveForward);
-	PlayerInputComponent->BindAxis("MoveRight",this,&AMainPlayer::MoveRight);
+	PlayerInputComponent->BindAxis("MoveForward", this, &AMainPlayer::MoveForward);
+	PlayerInputComponent->BindAxis("MoveRight", this, &AMainPlayer::MoveRight);
 
+	PlayerInputComponent->BindAxis("Turn", this, &ACharacter::AddControllerYawInput);
+	PlayerInputComponent->BindAxis("LookUp", this, &ACharacter::AddControllerPitchInput);
 }
 
 void AMainPlayer::MoveForward(float value)
 {
+	AddMovementInput(GetActorForwardVector(), value);
 }
 
 void AMainPlayer::MoveRight(float value)
 {
+	AddMovementInput(GetActorRightVector(), value);
 }
