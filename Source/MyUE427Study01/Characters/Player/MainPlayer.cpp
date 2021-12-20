@@ -22,6 +22,10 @@ AMainPlayer::AMainPlayer()
 	followCamera->bUsePawnControlRotation = true;
 
 	GetCapsuleComponent()->SetCapsuleSize(35.0f, 100.0f);
+
+	bUseControllerRotationPitch = false;
+	bUseControllerRotationRoll = false;
+	bUseControllerRotationYaw = false;
 }
 
 // Called when the game starts or when spawned
@@ -51,10 +55,18 @@ void AMainPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 void AMainPlayer::MoveForward(float value)
 {
-	AddMovementInput(GetActorForwardVector(), value);
+	// AddMovementInput(GetActorForwardVector(), value);
+	
+	FRotator rotation = Controller->GetControlRotation();
+	FRotator yawRotation(0.0f, rotation.Yaw, 0.0f);
+	FVector direction = FRotationMatrix(yawRotation).GetUnitAxis(EAxis::X);
+	AddMovementInput(direction, value);
 }
 
 void AMainPlayer::MoveRight(float value)
 {
-	AddMovementInput(GetActorRightVector(), value);
+	FRotator rotation = Controller->GetControlRotation();
+	FRotator yawRotation(0.0f, rotation.Yaw, 0.0f);
+	FVector direction = FRotationMatrix(yawRotation).GetUnitAxis(EAxis::Y);
+	AddMovementInput(direction, value);
 }
