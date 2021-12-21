@@ -4,6 +4,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
 AMainPlayer::AMainPlayer()
@@ -26,6 +27,10 @@ AMainPlayer::AMainPlayer()
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationRoll = false;
 	bUseControllerRotationYaw = false;
+
+	//转向加速度
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f);
 }
 
 // Called when the game starts or when spawned
@@ -55,8 +60,12 @@ void AMainPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 void AMainPlayer::MoveForward(float value)
 {
+	if (Controller == nullptr || value == 0)
+	{
+		return;
+	}
+
 	// AddMovementInput(GetActorForwardVector(), value);
-	
 	FRotator rotation = Controller->GetControlRotation();
 	FRotator yawRotation(0.0f, rotation.Yaw, 0.0f);
 	FVector direction = FRotationMatrix(yawRotation).GetUnitAxis(EAxis::X);
@@ -65,6 +74,11 @@ void AMainPlayer::MoveForward(float value)
 
 void AMainPlayer::MoveRight(float value)
 {
+	if (Controller == nullptr || value == 0)
+	{
+		return;
+	}
+	
 	FRotator rotation = Controller->GetControlRotation();
 	FRotator yawRotation(0.0f, rotation.Yaw, 0.0f);
 	FVector direction = FRotationMatrix(yawRotation).GetUnitAxis(EAxis::Y);

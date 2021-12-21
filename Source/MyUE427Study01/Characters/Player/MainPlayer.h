@@ -21,6 +21,10 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	class UCameraComponent* followCamera;
 
+	//Category 可以省略""  但是只能用于单个词语  不能有空格
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
+	float BaseTurnRate;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -35,5 +39,4 @@ public:
 	void MoveForward(float value);
 
 	void MoveRight(float value);
-
 };
