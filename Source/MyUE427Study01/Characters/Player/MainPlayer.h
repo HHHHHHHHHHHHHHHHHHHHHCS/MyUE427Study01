@@ -25,6 +25,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 	float BaseTurnRate;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
+	float BaseLookUpRate;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -39,4 +42,12 @@ public:
 	void MoveForward(float value);
 
 	void MoveRight(float value);
+
+	void Turn(float value);
+
+	void LookUp(float value);
+
+	void TurnAtRate(float rate);
+
+	void LookUpAtRate(float rate);
 };

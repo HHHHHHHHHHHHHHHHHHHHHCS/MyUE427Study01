@@ -31,6 +31,9 @@ AMainPlayer::AMainPlayer()
 	//转向加速度
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f);
+	
+	BaseTurnRate = 65.0f;
+	BaseLookUpRate = 65.0f;
 }
 
 // Called when the game starts or when spawned
@@ -54,8 +57,11 @@ void AMainPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAxis("MoveForward", this, &AMainPlayer::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AMainPlayer::MoveRight);
 
-	PlayerInputComponent->BindAxis("Turn", this, &ACharacter::AddControllerYawInput);
-	PlayerInputComponent->BindAxis("LookUp", this, &ACharacter::AddControllerPitchInput);
+	PlayerInputComponent->BindAxis("Turn", this, &AMainPlayer::Turn);
+	PlayerInputComponent->BindAxis("LookUp", this, &AMainPlayer::LookUp);
+
+	PlayerInputComponent->BindAxis("TurnAtRate", this, &AMainPlayer::TurnAtRate);
+	PlayerInputComponent->BindAxis("LookUpAtRate", this, &AMainPlayer::LookUpAtRate);
 }
 
 void AMainPlayer::MoveForward(float value)
@@ -78,9 +84,43 @@ void AMainPlayer::MoveRight(float value)
 	{
 		return;
 	}
-	
+
 	FRotator rotation = Controller->GetControlRotation();
 	FRotator yawRotation(0.0f, rotation.Yaw, 0.0f);
 	FVector direction = FRotationMatrix(yawRotation).GetUnitAxis(EAxis::Y);
 	AddMovementInput(direction, value);
+}
+
+void AMainPlayer::Turn(float value)
+{
+	if (value != 0)
+	{
+		AddControllerYawInput(value);
+	}
+}
+
+void AMainPlayer::LookUp(float value)
+{
+	if (value != 0)
+	{
+		AddControllerPitchInput(value);
+	}
+}
+
+void AMainPlayer::TurnAtRate(float rate)
+{
+	const float value = rate * BaseTurnRate * GetWorld()->GetDeltaSeconds();
+	if (value != 0.0)
+	{
+		AddControllerYawInput(value);
+	}
+}
+
+void AMainPlayer::LookUpAtRate(float rate)
+{
+	const float value = rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds();
+	if (value != 0.0)
+	{
+		AddControllerPitchInput(value);
+	}
 }
