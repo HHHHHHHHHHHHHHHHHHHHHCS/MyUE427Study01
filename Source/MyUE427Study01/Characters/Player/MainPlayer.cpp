@@ -31,7 +31,7 @@ AMainPlayer::AMainPlayer()
 	//转向加速度
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f);
-	
+
 	BaseTurnRate = 65.0f;
 	BaseLookUpRate = 65.0f;
 }
@@ -101,6 +101,32 @@ void AMainPlayer::Turn(float value)
 
 void AMainPlayer::LookUp(float value)
 {
+	// UE_LOG(LogTemp, Warning, TEXT("%f,,,,%f"), GetControlRotation().Pitch, value);
+
+	float pitch = GetControlRotation().Pitch;
+
+	if (pitch > 45 && pitch < 180 && value < 0)
+	{
+		if (pitch > 45)
+		{
+			FRotator rotator = GetControlRotation();
+			rotator.Pitch = 45;
+			Controller->SetControlRotation(rotator);
+		}
+		return;
+	}
+
+	if (pitch < 270 && pitch >= 180 && value > 0)
+	{
+		if (pitch < 270)
+		{
+			FRotator rotator = GetControlRotation();
+			rotator.Pitch = 270;
+			Controller->SetControlRotation(rotator);
+		}
+		return;
+	}
+
 	if (value != 0)
 	{
 		AddControllerPitchInput(value);
