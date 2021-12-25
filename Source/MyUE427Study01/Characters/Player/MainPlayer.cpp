@@ -29,9 +29,12 @@ AMainPlayer::AMainPlayer()
 	bUseControllerRotationYaw = false;
 
 	//转向加速度
-	GetCharacterMovement()->bOrientRotationToMovement = true;
-	GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f);
-
+	UCharacterMovementComponent* charaMovement = GetCharacterMovement();
+	charaMovement->bOrientRotationToMovement = true;
+	charaMovement->RotationRate = FRotator(0.0f, 500.0f, 0.0f);
+	charaMovement->JumpZVelocity = 500.0f;
+	charaMovement->AirControl = 0.15f;
+	
 	BaseTurnRate = 65.0f;
 	BaseLookUpRate = 65.0f;
 }
@@ -53,6 +56,9 @@ void AMainPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	check(PlayerInputComponent);
+
+	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &AMainPlayer::Jump);
+	PlayerInputComponent->BindAction("Jump", IE_Released, this, &AMainPlayer::StopJumping);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &AMainPlayer::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AMainPlayer::MoveRight);
@@ -149,4 +155,9 @@ void AMainPlayer::LookUpAtRate(float rate)
 	{
 		AddControllerPitchInput(value);
 	}
+}
+
+void AMainPlayer::Jump()
+{
+	Super::Jump();
 }

@@ -50,4 +50,6 @@ public:
 	void TurnAtRate(float rate);
 
 	void LookUpAtRate(float rate);
+
+	void Jump();
 };
