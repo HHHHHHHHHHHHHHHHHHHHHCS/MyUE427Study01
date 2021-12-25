@@ -35,8 +35,8 @@ AMainPlayer::AMainPlayer()
 	charaMovement->JumpZVelocity = 500.0f;
 	charaMovement->AirControl = 0.15f;
 	
-	BaseTurnRate = 65.0f;
-	BaseLookUpRate = 65.0f;
+	baseTurnRate = 65.0f;
+	baseLookUpRate = 65.0f;
 }
 
 // Called when the game starts or when spawned
@@ -141,7 +141,7 @@ void AMainPlayer::LookUp(float value)
 
 void AMainPlayer::TurnAtRate(float rate)
 {
-	const float value = rate * BaseTurnRate * GetWorld()->GetDeltaSeconds();
+	const float value = rate * baseTurnRate * GetWorld()->GetDeltaSeconds();
 	if (value != 0.0)
 	{
 		AddControllerYawInput(value);
@@ -150,7 +150,7 @@ void AMainPlayer::TurnAtRate(float rate)
 
 void AMainPlayer::LookUpAtRate(float rate)
 {
-	const float value = rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds();
+	const float value = rate * baseLookUpRate * GetWorld()->GetDeltaSeconds();
 	if (value != 0.0)
 	{
 		AddControllerPitchInput(value);
