@@ -24,6 +24,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	UStaticMeshComponent* TriggerMesh;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Triggerable Door|Door Properties")
+	float DelayTime;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -52,5 +55,16 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category="Triggerable Door|Door Switch")
 	void CloseDoor();
 
-private:
+	UFUNCTION(BlueprintCallable, Category="Triggerable Door|Trigger Switch")
+	void UpdateTriggerLocation(FVector offset);
+
+	UFUNCTION(BlueprintCallable, Category="Triggerable Door|Door Switch")
+	void UpdateDoorTrigger(FVector offset);
+
+private :
+	FVector initTriggerLocation;
+
+	FVector initDoorLocation;
+
+	FTimerHandle CloseDoorTimerHandle;
 };

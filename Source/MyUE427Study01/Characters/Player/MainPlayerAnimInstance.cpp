@@ -20,8 +20,8 @@ void UMainPlayerAnimInstance::UpdateAnimationProperties()
 
 	if(playerRef)
 	{
-		FVector speedVec = playerRef->GetVelocity();
-		FVector planeSpeed = FVector(speedVec.X, speedVec.Y, 0.0f);
+		const FVector speedVec = playerRef->GetVelocity();
+		const FVector planeSpeed = FVector(speedVec.X, speedVec.Y, 0.0f);
 
 		speed = planeSpeed.Size();
 

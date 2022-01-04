@@ -23,6 +23,8 @@ ATriggerDoor::ATriggerDoor()
 	DoorMesh->SetupAttachment(root);
 	TriggerMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TriggerMesh"));
 	TriggerMesh->SetupAttachment(root);
+
+	DelayTime = 1.5f;
 }
 
 // Called when the game starts or when spawned
@@ -32,6 +34,9 @@ void ATriggerDoor::BeginPlay()
 
 	TriggerBox->OnComponentBeginOverlap.AddDynamic(this, &ATriggerDoor::OnOverlapBegin);
 	TriggerBox->OnComponentEndOverlap.AddDynamic(this, &ATriggerDoor::OnOverlapEnd);
+
+	initTriggerLocation = TriggerMesh->GetComponentLocation();
+	initDoorLocation = DoorMesh->GetComponentLocation();
 }
 
 // Called every frame
@@ -44,7 +49,7 @@ void ATriggerDoor::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AAct
                                   UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
                                   const FHitResult& SweepResult)
 {
-	AMainPlayer* mainPlayer = Cast<AMainPlayer>(OtherActor);
+	const AMainPlayer* mainPlayer = Cast<AMainPlayer>(OtherActor);
 	if (!mainPlayer)
 	{
 		return;
@@ -57,12 +62,25 @@ void ATriggerDoor::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AAct
 void ATriggerDoor::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                                 UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	AMainPlayer* mainPlayer = Cast<AMainPlayer>(OtherActor);
+	const AMainPlayer* mainPlayer = Cast<AMainPlayer>(OtherActor);
 	if (!mainPlayer)
 	{
 		return;
 	}
-	
-	CloseDoor();
+
 	RaiseTrigger();
+
+	GetWorldTimerManager().SetTimer(CloseDoorTimerHandle, this, &ATriggerDoor::CloseDoor, DelayTime);
+}
+
+void ATriggerDoor::UpdateTriggerLocation(FVector offset)
+{
+	const FVector newLocation = initTriggerLocation + offset;
+	TriggerMesh->SetWorldLocation(newLocation);
+}
+
+void ATriggerDoor::UpdateDoorTrigger(FVector offset)
+{
+	const FVector newLocation = initDoorLocation + offset;
+	DoorMesh->SetWorldLocation(newLocation);
 }
