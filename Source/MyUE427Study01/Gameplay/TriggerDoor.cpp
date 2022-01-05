@@ -25,6 +25,7 @@ ATriggerDoor::ATriggerDoor()
 	TriggerMesh->SetupAttachment(root);
 
 	DelayTime = 1.5f;
+	bIsStayTrigger = false;
 }
 
 // Called when the game starts or when spawned
@@ -55,6 +56,13 @@ void ATriggerDoor::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AAct
 		return;
 	}
 
+	if (!bIsStayTrigger)
+	{
+		bIsStayTrigger = true;
+	}
+
+	// 改用标示位+lambda测试
+	// GetWorldTimerManager().ClearTimer(CloseDoorTimerHandle);
 	OpenDoor();
 	LowerTrigger();
 }
@@ -68,9 +76,23 @@ void ATriggerDoor::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor
 		return;
 	}
 
-	RaiseTrigger();
+	if (bIsStayTrigger)
+	{
+		bIsStayTrigger = false;
+	}
 
-	GetWorldTimerManager().SetTimer(CloseDoorTimerHandle, this, &ATriggerDoor::CloseDoor, DelayTime);
+	auto delayCloseDoor = [this]()
+	{
+		if (!bIsStayTrigger)
+		{
+			CloseDoor();
+		}
+	};
+
+	GetWorldTimerManager().SetTimer(CloseDoorTimerHandle, FTimerDelegate::CreateLambda(delayCloseDoor),
+	                                DelayTime, false);
+
+	RaiseTrigger();
 }
 
 void ATriggerDoor::UpdateTriggerLocation(FVector offset)

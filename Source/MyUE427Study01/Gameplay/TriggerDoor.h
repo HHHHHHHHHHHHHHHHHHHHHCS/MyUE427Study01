@@ -63,8 +63,9 @@ public:
 
 private :
 	FVector initTriggerLocation;
-
 	FVector initDoorLocation;
 
 	FTimerHandle CloseDoorTimerHandle;
+
+	bool bIsStayTrigger;
 };
