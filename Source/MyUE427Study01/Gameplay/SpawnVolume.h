@@ -28,4 +28,10 @@ protected:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	UFUNCTION(BlueprintCallable, Category="Spawn Volume")
+	FVector GetSpawnPoint();
+
+	UFUNCTION(BlueprintCallable, Category="Spawn Volume")
+	TSubclassOf<AActor> GetSpawnActorClass();
 };
