@@ -47,6 +47,12 @@ TSubclassOf<AActor> ASpawnVolume::GetSpawnActorClass()
 	{
 		return nullptr;
 	}
+}
 
-	return TSubclassOf<AActor>();
+void ASpawnVolume::SpawnActor_Implementation(UClass* spawnClass, FVector spawnLocation)
+{
+	if(spawnClass)
+	{
+		GetWorld()->SpawnActor<AActor>(spawnClass, spawnLocation,FRotator(0.0f));
+	}
 }

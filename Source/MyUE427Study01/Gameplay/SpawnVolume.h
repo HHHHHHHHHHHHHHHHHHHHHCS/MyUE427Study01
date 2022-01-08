@@ -20,7 +20,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Spawn Volume")
 	TArray<TSubclassOf<AActor>> SpawnActorClassArray;
-	
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -29,9 +29,12 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UFUNCTION(BlueprintCallable, Category="Spawn Volume")
+	UFUNCTION(BlueprintPure, Category="Spawn Volume")
 	FVector GetSpawnPoint();
 
-	UFUNCTION(BlueprintCallable, Category="Spawn Volume")
+	UFUNCTION(BlueprintPure, Category="Spawn Volume")
 	TSubclassOf<AActor> GetSpawnActorClass();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Spawn Volume")
+	void SpawnActor(UClass* spawnClass, FVector spawnLocation);
 };
