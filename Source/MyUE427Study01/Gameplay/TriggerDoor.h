@@ -67,5 +67,5 @@ private :
 
 	FTimerHandle CloseDoorTimerHandle;
 
-	bool bIsStayTrigger;
+	// bool bIsStayTrigger;
 };

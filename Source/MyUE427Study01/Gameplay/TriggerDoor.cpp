@@ -25,7 +25,7 @@ ATriggerDoor::ATriggerDoor()
 	TriggerMesh->SetupAttachment(root);
 
 	DelayTime = 1.5f;
-	bIsStayTrigger = false;
+	// bIsStayTrigger = false;
 }
 
 // Called when the game starts or when spawned
@@ -56,13 +56,12 @@ void ATriggerDoor::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AAct
 		return;
 	}
 
-	if (!bIsStayTrigger)
-	{
-		bIsStayTrigger = true;
-	}
+	// if (!bIsStayTrigger)
+	// {
+	// 	bIsStayTrigger = true;
+	// }
 
-	// 改用标示位+lambda测试
-	// GetWorldTimerManager().ClearTimer(CloseDoorTimerHandle);
+	GetWorldTimerManager().ClearTimer(CloseDoorTimerHandle);
 	OpenDoor();
 	LowerTrigger();
 }
@@ -76,21 +75,21 @@ void ATriggerDoor::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor
 		return;
 	}
 
-	if (bIsStayTrigger)
-	{
-		bIsStayTrigger = false;
-	}
+	// if (bIsStayTrigger)
+	// {
+	// 	bIsStayTrigger = false;
+	// }
+	// auto delayCloseDoor = [this]()
+	// {
+	// 	if (!bIsStayTrigger)
+	// 	{
+	// 		CloseDoor();
+	// 	}
+	// };
+	// GetWorldTimerManager().SetTimer(CloseDoorTimerHandle, FTimerDelegate::CreateLambda(delayCloseDoor),
+	//                                 DelayTime, false);
 
-	auto delayCloseDoor = [this]()
-	{
-		if (!bIsStayTrigger)
-		{
-			CloseDoor();
-		}
-	};
-
-	GetWorldTimerManager().SetTimer(CloseDoorTimerHandle, FTimerDelegate::CreateLambda(delayCloseDoor),
-	                                DelayTime, false);
+	GetWorldTimerManager().SetTimer(CloseDoorTimerHandle, this, &ATriggerDoor::CloseDoor, DelayTime);
 
 	RaiseTrigger();
 }

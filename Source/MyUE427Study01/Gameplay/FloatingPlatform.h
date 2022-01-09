@@ -24,6 +24,19 @@ public:
 	UPROPERTY(EditAnywhere, Category="Floating Platform", meta=(MakeEditWidget = "true"))
 	FVector EndPoint;
 
+	UPROPERTY(EditAnywhere, Category="Floating Platform")
+	float InterpSpeed;
+
+	UPROPERTY(EditAnywhere, Category="Floating Platform")
+	float DelayTime;
+
+	
+private:
+	bool bInterping;
+
+	float Distance;
+	FTimerHandle InterpTimerHandle;
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

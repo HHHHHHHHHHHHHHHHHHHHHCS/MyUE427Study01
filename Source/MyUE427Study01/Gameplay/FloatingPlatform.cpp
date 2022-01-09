@@ -12,7 +12,14 @@ AFloatingPlatform::AFloatingPlatform()
 
 	PlatformMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PlatformMesh"));
 	RootComponent = PlatformMesh;
+
+	StartPoint = FVector::ZeroVector;
+	EndPoint = FVector::ZeroVector;
+	InterpSpeed = 200.0f;
+	DelayTime = 2.0f;
+	bInterping = true;
 }
+
 
 // Called when the game starts or when spawned
 void AFloatingPlatform::BeginPlay()
@@ -20,10 +27,36 @@ void AFloatingPlatform::BeginPlay()
 	Super::BeginPlay();
 
 	StartPoint = GetActorLocation();
+	Distance = EndPoint.Size();
+	EndPoint += StartPoint;
 }
 
 // Called every frame
 void AFloatingPlatform::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (bInterping)
+	{
+		const FVector currentLocation = GetActorLocation();
+		const FVector newLocation = FMath::VInterpConstantTo(currentLocation, EndPoint, DeltaTime, InterpSpeed);
+		SetActorLocation(newLocation);
+
+		const float nowDistance = (GetActorLocation() - StartPoint).Size();
+		if (Distance - nowDistance <= 0.1f)
+		{
+			bInterping = false;
+			
+			const auto toggleInterpState = [this]()
+			{
+				bInterping = true;
+			};
+			GetWorldTimerManager().SetTimer(InterpTimerHandle, FTimerDelegate::CreateLambda(toggleInterpState)
+			                                , DelayTime, false);
+			
+			const FVector tempVec = EndPoint;
+			EndPoint = StartPoint;
+			StartPoint = tempVec;
+		}
+	}
 }
