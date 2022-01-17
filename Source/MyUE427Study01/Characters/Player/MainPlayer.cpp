@@ -37,6 +37,12 @@ AMainPlayer::AMainPlayer()
 	
 	baseTurnRate = 65.0f;
 	baseLookUpRate = 65.0f;
+
+	maxHealth = 100.0f;
+	health = maxHealth;
+	maxStamina = 150.0f;
+	stamina = maxStamina;
+	coins = 0;
 }
 
 // Called when the game starts or when spawned
