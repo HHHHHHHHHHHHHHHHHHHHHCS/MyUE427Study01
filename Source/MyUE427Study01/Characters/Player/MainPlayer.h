@@ -68,5 +68,12 @@ public:
 
 	void LookUpAtRate(float rate);
 
-	void Jump();
+	virtual void Jump() override;
+	
+	void IncreaseHealth(float value);
+
+	void IncreaseStamina(float value);
+	
+	void IncreaseCoin(int value);
+
 };

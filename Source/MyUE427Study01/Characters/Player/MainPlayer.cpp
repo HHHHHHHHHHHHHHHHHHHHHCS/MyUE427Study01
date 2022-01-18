@@ -34,7 +34,7 @@ AMainPlayer::AMainPlayer()
 	charaMovement->RotationRate = FRotator(0.0f, 500.0f, 0.0f);
 	charaMovement->JumpZVelocity = 500.0f;
 	charaMovement->AirControl = 0.15f;
-	
+
 	baseTurnRate = 65.0f;
 	baseLookUpRate = 65.0f;
 
@@ -166,4 +166,19 @@ void AMainPlayer::LookUpAtRate(float rate)
 void AMainPlayer::Jump()
 {
 	Super::Jump();
+}
+
+void AMainPlayer::IncreaseHealth(float value)
+{
+	health = FMath::Clamp(health + value, 0.0f, maxHealth);
+}
+
+void AMainPlayer::IncreaseStamina(float value)
+{
+	stamina = FMath::Clamp(stamina + value, 0.0f, maxStamina);
+}
+
+void AMainPlayer::IncreaseCoin(int value)
+{
+	coins += value;
 }
