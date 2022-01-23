@@ -17,6 +17,11 @@ AInteractableItem::AInteractableItem()
 	TriggerVolume = CreateDefaultSubobject<USphereComponent>(TEXT("TriggerVolume"));
 	RootComponent = TriggerVolume;
 
+	TriggerVolume->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	TriggerVolume->SetCollisionObjectType(ECollisionChannel::ECC_WorldStatic);
+	TriggerVolume->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	TriggerVolume->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+
 	DisplayMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DisplayMesh"));
 	DisplayMesh->SetupAttachment(GetRootComponent());
 

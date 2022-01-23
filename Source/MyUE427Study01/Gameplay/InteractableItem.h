@@ -25,7 +25,7 @@ public:
 	class UParticleSystemComponent* IdleParticle;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Interactable Item|Particles")
-	class UParticleSystemComponent* OverlapParticle;
+	class UParticleSystem* OverlapParticle;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Interactable Item|Sounds")
 	class USoundCue* OverlapSound;
@@ -44,12 +44,14 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-private:
+public:
 	UFUNCTION()
-	void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
-	                    int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	virtual void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	                            UPrimitiveComponent* OtherComp,
+	                            int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	UFUNCTION()
-	void OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
-	                  int32 OtherBodyIndex);
+	virtual void OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	                          UPrimitiveComponent* OtherComp,
+	                          int32 OtherBodyIndex);
 };
