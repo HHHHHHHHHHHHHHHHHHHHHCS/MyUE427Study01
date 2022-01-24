@@ -4,29 +4,23 @@
 
 #include "CoreMinimal.h"
 #include "InteractableItem.h"
-#include "ExplosiveItem.generated.h"
+
+#include "MyUE427Study01/Characters/Player/MainPlayer.h"
+
+#include "PickupItem.generated.h"
+
 
 /**
  * 
  */
 UCLASS()
-class MYUE427STUDY01_API AExplosiveItem : public AInteractableItem
+class MYUE427STUDY01_API APickupItem : public AInteractableItem
 {
 	GENERATED_BODY()
 
 public:
-	AExplosiveItem();
+	APickupItem();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Damge")
-	float Damage;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Damge")
-	TSubclassOf<UDamageType> DamageTypeClass;
-	
-public:
-
-	
-public:
 	virtual void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	                            UPrimitiveComponent* OtherComp,
 	                            int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
@@ -34,4 +28,8 @@ public:
 	virtual void OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	                          UPrimitiveComponent* OtherComp,
 	                          int32 OtherBodyIndex) override;
+
+
+	UFUNCTION(BlueprintImplementableEvent, Category="Pickup")
+	void OnPickup(const AMainPlayer* mainPlayer);
 };
