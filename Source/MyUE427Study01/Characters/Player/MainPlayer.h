@@ -69,12 +69,16 @@ public:
 	void LookUpAtRate(float rate);
 
 	virtual void Jump() override;
-	
+
+	UFUNCTION(BlueprintCallable)
 	void IncreaseHealth(float value);
 
+	UFUNCTION(BlueprintCallable)
 	void IncreaseStamina(float value);
-	
+
+	UFUNCTION(BlueprintCallable)
 	void IncreaseCoin(int value);
 
-	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
+	                         AActor* DamageCauser) override;
 };

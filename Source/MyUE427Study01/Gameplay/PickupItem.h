@@ -31,5 +31,5 @@ public:
 
 
 	UFUNCTION(BlueprintImplementableEvent, Category="Pickup")
-	void OnPickup(const AMainPlayer* mainPlayer);
+	void OnPickup(AMainPlayer* mainPlayer);
 };
