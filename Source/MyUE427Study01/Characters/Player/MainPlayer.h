@@ -41,9 +41,20 @@ public:
 	float stamina;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Stats")
+	float staminaConsumeRate;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Stats", meta = (ClampMin = 0, ClampMax = 1))
+	float exhaustedStaminaRatio;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Stats")
 	int32 coins;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Stats")
+	float runningSpeed;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Stats")
+	int32 sprintingSpeed;
+	
 private:
 protected:
 	// Called when the game starts or when spawned
@@ -78,7 +89,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void IncreaseCoin(int value);
-
+	
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
 	                         AActor* DamageCauser) override;
 };

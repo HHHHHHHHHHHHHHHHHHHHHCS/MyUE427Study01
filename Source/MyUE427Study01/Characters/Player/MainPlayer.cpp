@@ -42,6 +42,8 @@ AMainPlayer::AMainPlayer()
 	health = maxHealth;
 	maxStamina = 150.0f;
 	stamina = maxStamina;
+	staminaConsumeRate = 20.0f;
+	exhaustedStaminaRatio = 0.167f;
 	coins = 0;
 }
 
