@@ -6,6 +6,22 @@
 #include "GameFramework/Character.h"
 #include "MainPlayer.generated.h"
 
+UENUM(BlueprintType)
+enum class EPlayerMovementStatus: uint8
+{
+	EPMS_Normal UMETA(Displayname = "Normal"),
+	EPMS_Sprinting UMETA(Displayname = "Sprinting"),
+	EPMS_Dead UMETA(Displayname = "Dead"),
+};
+
+UENUM(BlueprintType)
+enum class EPlayerStaminaStatus: uint8
+{
+	EPSS_Normal UMETA(Displayname = "Normal"),
+	EPSS_Exhausted UMETA(Displayname = "Exhausted"),
+	EPSS_ExhaustedRecovering UMETA(Displayname = "ExhaustedRecovering"),
+};
+
 UCLASS()
 class MYUE427STUDY01_API AMainPlayer : public ACharacter
 {
@@ -45,7 +61,10 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Stats", meta = (ClampMin = 0, ClampMax = 1))
 	float exhaustedStaminaRatio;
-	
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Player Stats")
+	EPlayerStaminaStatus staminaStatus;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Stats")
 	int32 coins;
 
@@ -53,9 +72,14 @@ public:
 	float runningSpeed;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Stats")
-	int32 sprintingSpeed;
-	
+	float sprintingSpeed;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Player Stats")
+	EPlayerMovementStatus movementStatus;
+
 private:
+	bool bLeftShiftKeyDown;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -89,7 +113,14 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void IncreaseCoin(int value);
-	
+
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
 	                         AActor* DamageCauser) override;
+
+	FORCEINLINE void LeftShiftKeyDown() { bLeftShiftKeyDown = true; }
+
+	FORCEINLINE void LeftShiftKeyUp() { bLeftShiftKeyDown = false; }
+
+	void SetMovementStatus(EPlayerMovementStatus status);
+	
 };
