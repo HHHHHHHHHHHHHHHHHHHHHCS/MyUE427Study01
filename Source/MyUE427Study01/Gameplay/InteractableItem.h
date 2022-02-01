@@ -19,7 +19,7 @@ public:
 	class USphereComponent* TriggerVolume;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	class UStaticMeshComponent* DisplayMesh;
+	class UMeshComponent* DisplayMesh;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	class UParticleSystemComponent* IdleParticle;
