@@ -6,6 +6,13 @@
 #include "InteractableItem.h"
 #include "WeaponItem.generated.h"
 
+UENUM(BlueprintType)
+enum class EWeaponState: uint8
+{
+	EWS_CanPickup UMETA(DisplayName = "CanPickup"),
+	EWS_Equipped UMETA(DisplayName = "Equpped")
+};
+
 /**
  * 
  */
@@ -14,7 +21,7 @@ class MYUE427STUDY01_API AWeaponItem : public AInteractableItem
 {
 	GENERATED_BODY()
 
-public: 
+public:
 	AWeaponItem();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon|Sond")
@@ -22,22 +29,22 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon|Particle")
 	bool bShouldReserveIdleParticle;
-	
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Weapon")
+	EWeaponState WeaponState;
+
 	virtual void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-							UPrimitiveComponent* OtherComp,
-							int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
+	                            UPrimitiveComponent* OtherComp,
+	                            int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
 
 	virtual void OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-							  UPrimitiveComponent* OtherComp,
-							  int32 OtherBodyIndex) override;
+	                          UPrimitiveComponent* OtherComp,
+	                          int32 OtherBodyIndex) override;
 
-	
+	void Equip(class AMainPlayer* mainPlayer);
+
+	void UnEquip(AMainPlayer* mainPlayer);
+
 protected:
 	virtual void BeginPlay() override;
-
-private:
-	void Equip();
-
-	void UnEquip();
-	
 };

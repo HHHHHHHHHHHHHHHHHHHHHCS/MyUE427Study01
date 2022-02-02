@@ -80,6 +80,15 @@ public:
 private:
 	bool bLeftShiftKeyDown;
 
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon)
+	bool bHasWeapon;
+
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon)
+	class AWeaponItem* equippedWeapon;
+
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon)
+	AWeaponItem* overlappingWeapon;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -122,5 +131,12 @@ public:
 	FORCEINLINE void LeftShiftKeyUp() { bLeftShiftKeyDown = false; }
 
 	void SetMovementStatus(EPlayerMovementStatus status);
-	
+
+	FORCEINLINE void SetOverlappingWeapon(AWeaponItem* weaponItem) { overlappingWeapon = weaponItem; }
+
+	FORCEINLINE AWeaponItem* GetOverlappingWeapon() { return overlappingWeapon; }
+
+	void InteractKeyDown();
+
+	void EquipWeapon(AWeaponItem* weaponItem);
 };

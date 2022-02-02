@@ -5,6 +5,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "MyUE427Study01/Gameplay/WeaponItem.h"
 
 // Sets default values
 AMainPlayer::AMainPlayer()
@@ -131,6 +132,8 @@ void AMainPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 	PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &AMainPlayer::LeftShiftKeyDown);
 	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &AMainPlayer::LeftShiftKeyUp);
+
+	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &AMainPlayer::InteractKeyDown);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &AMainPlayer::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AMainPlayer::MoveRight);
@@ -276,4 +279,34 @@ void AMainPlayer::SetMovementStatus(EPlayerMovementStatus status)
 		GetCharacterMovement()->MaxWalkSpeed = runningSpeed;
 		break;
 	}
+}
+
+void AMainPlayer::InteractKeyDown()
+{
+	if (overlappingWeapon)
+	{
+		if (equippedWeapon)
+		{
+			equippedWeapon->UnEquip(this);
+			overlappingWeapon->Equip(this);
+		}
+		else
+		{
+			overlappingWeapon->Equip(this);
+		}
+	}
+	else
+	{
+		if (equippedWeapon)
+		{
+			equippedWeapon->UnEquip(this);
+		}
+	}
+}
+
+void AMainPlayer::EquipWeapon(AWeaponItem* weaponItem)
+{
+	bHasWeapon = true;
+	equippedWeapon = weaponItem;
+	overlappingWeapon = nullptr;
 }
