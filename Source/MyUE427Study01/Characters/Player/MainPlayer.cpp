@@ -287,8 +287,10 @@ void AMainPlayer::InteractKeyDown()
 	{
 		if (equippedWeapon)
 		{
+			//不然武器放下会触发碰撞, 覆盖overlappingWeapon, 所以需要临时保存一下
+			auto tempVar = overlappingWeapon;
 			equippedWeapon->UnEquip(this);
-			overlappingWeapon->Equip(this);
+			tempVar->Equip(this);
 		}
 		else
 		{
@@ -309,4 +311,15 @@ void AMainPlayer::EquipWeapon(AWeaponItem* weaponItem)
 	bHasWeapon = true;
 	equippedWeapon = weaponItem;
 	overlappingWeapon = nullptr;
+}
+
+void AMainPlayer::UnEquipWeapon(AWeaponItem* weaponItem)
+{
+	bHasWeapon = false;
+	equippedWeapon = nullptr;
+	
+	if(overlappingWeapon == nullptr)
+	{
+		overlappingWeapon = weaponItem;
+	}
 }

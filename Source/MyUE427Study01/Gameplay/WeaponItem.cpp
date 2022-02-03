@@ -6,6 +6,7 @@
 #include"Components/SkeletalMeshComponent.h"
 #include "Components/SphereComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
+#include "GameFramework/PawnMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
 #include "Particles/ParticleSystemComponent.h"
@@ -31,6 +32,11 @@ AWeaponItem::AWeaponItem()
 
 	bShouldReserveIdleParticle = false;
 	WeaponState = EWeaponState::EWS_CanPickup;
+
+	resetRotator = GetActorRotation();
+	resetScale = GetActorScale();
+
+	ActiveDisplayMeshCollision();
 }
 
 
@@ -38,6 +44,7 @@ void AWeaponItem::BeginPlay()
 {
 	Super::BeginPlay();
 }
+
 
 void AWeaponItem::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                                  UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
@@ -72,6 +79,7 @@ void AWeaponItem::Equip(AMainPlayer* mainPlayer)
 	if (mainPlayer)
 	{
 		WeaponState = EWeaponState::EWS_Equipped;
+		DeactiveDisplayMeshCollision();
 
 		const USkeletalMeshSocket* rightHandSocket = mainPlayer->GetMesh()->GetSocketByName("RightHandSocket");
 
@@ -96,4 +104,34 @@ void AWeaponItem::Equip(AMainPlayer* mainPlayer)
 
 void AWeaponItem::UnEquip(AMainPlayer* mainPlayer)
 {
+	if (mainPlayer && !mainPlayer->GetMovementComponent()->IsFalling())
+	{
+		WeaponState = EWeaponState::EWS_CanPickup;
+		ActiveDisplayMeshCollision();
+
+		mainPlayer->UnEquipWeapon(this);
+
+		DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+
+		SetActorRotation(resetRotator);
+		SetActorScale3D(resetScale);
+
+		bNeedRotate = true;
+		IdleParticle->Activate();
+	}
+}
+
+void AWeaponItem::ActiveDisplayMeshCollision()
+{
+	TriggerVolume->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	DisplayMesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	DisplayMesh->SetCollisionObjectType(ECollisionChannel::ECC_WorldStatic);
+	DisplayMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	DisplayMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
+}
+
+void AWeaponItem::DeactiveDisplayMeshCollision()
+{
+	TriggerVolume->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	DisplayMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }

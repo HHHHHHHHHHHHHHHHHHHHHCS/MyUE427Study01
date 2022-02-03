@@ -20,10 +20,14 @@ UCLASS()
 class MYUE427STUDY01_API AWeaponItem : public AInteractableItem
 {
 	GENERATED_BODY()
-
 public:
 	AWeaponItem();
 
+private:
+	FRotator resetRotator;
+	FVector resetScale;
+
+public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon|Sond")
 	class USoundCue* OnEquippedSound;
 
@@ -33,6 +37,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Weapon")
 	EWeaponState WeaponState;
 
+public:
 	virtual void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	                            UPrimitiveComponent* OtherComp,
 	                            int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
@@ -47,4 +52,11 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+
+private:
+
+	void ActiveDisplayMeshCollision();
+
+	void DeactiveDisplayMeshCollision();
+
 };

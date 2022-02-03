@@ -139,4 +139,6 @@ public:
 	void InteractKeyDown();
 
 	void EquipWeapon(AWeaponItem* weaponItem);
+
+	void UnEquipWeapon(AWeaponItem* weaponItem);
 };
