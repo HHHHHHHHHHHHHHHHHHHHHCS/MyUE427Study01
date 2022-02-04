@@ -2,9 +2,12 @@
 
 #pragma once
 
+#include "MainPlayer.h"
+
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
 #include "MainPlayerAnimInstance.generated.h"
+
 
 /**
  * 
@@ -23,7 +26,7 @@ public:
 	bool bIsInAir;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Animation Properties")
-	class AMainPlayer* playerRef;
+	AMainPlayer* playerRef;
 
 public :
 	virtual void NativeInitializeAnimation() override;

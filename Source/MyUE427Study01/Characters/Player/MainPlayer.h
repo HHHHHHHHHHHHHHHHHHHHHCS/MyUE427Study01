@@ -77,12 +77,13 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Player Stats")
 	EPlayerMovementStatus movementStatus;
 
+	
 private:
 	bool bLeftShiftKeyDown;
 
-	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon)
+	// UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon)
 	bool bHasWeapon;
-
+	
 	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon)
 	class AWeaponItem* equippedWeapon;
 
@@ -141,4 +142,8 @@ public:
 	void EquipWeapon(AWeaponItem* weaponItem);
 
 	void UnEquipWeapon(AWeaponItem* weaponItem);
+
+	//如果写const 蓝图读取 类型会报错
+	UFUNCTION(BlueprintPure)
+	FORCEINLINE bool GetHasWeapon() { return bHasWeapon; }
 };
