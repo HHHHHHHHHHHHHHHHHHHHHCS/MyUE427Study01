@@ -77,18 +77,25 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Player Stats")
 	EPlayerMovementStatus movementStatus;
 
-	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Animation")
+	class UAnimMontage* attackMontage;
+
 private:
 	bool bLeftShiftKeyDown;
 
 	// UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon)
 	bool bHasWeapon;
-	
+
 	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon)
 	class AWeaponItem* equippedWeapon;
 
 	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon)
 	AWeaponItem* overlappingWeapon;
+
+	bool bAttackKeyDown;
+
+	bool bIsAttacking;
+
 
 protected:
 	// Called when the game starts or when spawned
@@ -146,4 +153,13 @@ public:
 	//如果写const 蓝图读取 类型会报错
 	UFUNCTION(BlueprintPure)
 	FORCEINLINE bool GetHasWeapon() { return bHasWeapon; }
+
+	void AttackKeyDown();
+
+	FORCEINLINE void AttackKeyUp() { bAttackKeyDown = false; };
+
+	void Attack();
+
+	UFUNCTION(BlueprintCallable)
+	void AttackEnd();
 };

@@ -1,10 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "MainPlayer.h"
+
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Animation/AnimInstance.h"
+#include "Animation/AnimMontage.h"
+
 #include "MyUE427Study01/Gameplay/WeaponItem.h"
 
 // Sets default values
@@ -134,6 +138,10 @@ void AMainPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &AMainPlayer::LeftShiftKeyUp);
 
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &AMainPlayer::InteractKeyDown);
+
+	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &AMainPlayer::AttackKeyDown);
+	PlayerInputComponent->BindAction("Attack", IE_Released, this, &AMainPlayer::AttackKeyUp);
+
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &AMainPlayer::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AMainPlayer::MoveRight);
@@ -317,9 +325,46 @@ void AMainPlayer::UnEquipWeapon(AWeaponItem* weaponItem)
 {
 	bHasWeapon = false;
 	equippedWeapon = nullptr;
-	
-	if(overlappingWeapon == nullptr)
+
+	if (overlappingWeapon == nullptr)
 	{
 		overlappingWeapon = weaponItem;
+	}
+}
+
+void AMainPlayer::AttackKeyDown()
+{
+	bAttackKeyDown = true;
+
+	if (bHasWeapon)
+	{
+		Attack();
+	}
+}
+
+void AMainPlayer::Attack()
+{
+	if (!bIsAttacking)
+	{
+		bIsAttacking = true;
+
+		UAnimInstance* animInstance = GetMesh()->GetAnimInstance();
+		if (animInstance && attackMontage)
+		{
+			const float playRate = FMath::RandRange(1.25f, 1.75f);
+			const FString sectionName = FString::FromInt(FMath::RandRange(1, 2));
+			animInstance->Montage_Play(attackMontage, playRate);
+			animInstance->Montage_JumpToSection(FName(*sectionName), attackMontage);
+		}
+	}
+}
+
+void AMainPlayer::AttackEnd()
+{
+	bIsAttacking = false;
+
+	if(bAttackKeyDown)
+	{
+		AttackKeyDown();
 	}
 }
