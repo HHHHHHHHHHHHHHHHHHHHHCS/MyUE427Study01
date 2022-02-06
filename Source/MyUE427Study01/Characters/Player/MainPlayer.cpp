@@ -57,6 +57,9 @@ AMainPlayer::AMainPlayer()
 	SetMovementStatus(EPlayerMovementStatus::EPMS_Normal);
 
 	bLeftShiftKeyDown = false;
+
+	bHasWeapon = false;
+	bIsAttacking = false;
 }
 
 // Called when the game starts or when spawned
@@ -142,7 +145,6 @@ void AMainPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &AMainPlayer::AttackKeyDown);
 	PlayerInputComponent->BindAction("Attack", IE_Released, this, &AMainPlayer::AttackKeyUp);
 
-
 	PlayerInputComponent->BindAxis("MoveForward", this, &AMainPlayer::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AMainPlayer::MoveRight);
 
@@ -155,6 +157,11 @@ void AMainPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 void AMainPlayer::MoveForward(float value)
 {
+	if (bIsAttacking)
+	{
+		return;
+	}
+
 	if (Controller == nullptr || value == 0)
 	{
 		return;
@@ -242,6 +249,11 @@ void AMainPlayer::LookUpAtRate(float rate)
 
 void AMainPlayer::Jump()
 {
+	if (bIsAttacking)
+	{
+		return;
+	}
+
 	Super::Jump();
 }
 
@@ -291,6 +303,11 @@ void AMainPlayer::SetMovementStatus(EPlayerMovementStatus status)
 
 void AMainPlayer::InteractKeyDown()
 {
+	if (bIsAttacking || GetMovementComponent()->IsFalling())
+	{
+		return;
+	}
+
 	if (overlappingWeapon)
 	{
 		if (equippedWeapon)
@@ -344,7 +361,7 @@ void AMainPlayer::AttackKeyDown()
 
 void AMainPlayer::Attack()
 {
-	if (!bIsAttacking)
+	if (!bIsAttacking && !GetMovementComponent()->IsFalling())
 	{
 		bIsAttacking = true;
 
@@ -363,7 +380,7 @@ void AMainPlayer::AttackEnd()
 {
 	bIsAttacking = false;
 
-	if(bAttackKeyDown)
+	if (bAttackKeyDown)
 	{
 		AttackKeyDown();
 	}

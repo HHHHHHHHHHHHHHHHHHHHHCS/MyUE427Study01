@@ -104,7 +104,7 @@ void AWeaponItem::Equip(AMainPlayer* mainPlayer)
 
 void AWeaponItem::UnEquip(AMainPlayer* mainPlayer)
 {
-	if (mainPlayer && !mainPlayer->GetMovementComponent()->IsFalling())
+	if (mainPlayer)
 	{
 		WeaponState = EWeaponState::EWS_CanPickup;
 		ActiveDisplayMeshCollision();
