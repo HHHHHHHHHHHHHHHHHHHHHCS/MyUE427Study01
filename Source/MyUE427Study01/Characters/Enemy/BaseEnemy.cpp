@@ -76,3 +76,7 @@ void ABaseEnemy::OnAttackVolumeOverlapEnd(UPrimitiveComponent* OverlappedCompone
                                           UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 }
+
+void ABaseEnemy::MoveToTarget(AMainPlayer* targetPlayer)
+{
+}
