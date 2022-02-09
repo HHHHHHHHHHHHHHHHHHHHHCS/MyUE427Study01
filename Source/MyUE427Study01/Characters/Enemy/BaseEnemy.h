@@ -29,6 +29,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="AI")
 	USphereComponent* AttackVolume;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="AI")
+	class AAIController* AIController;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Enemy Stats")
 	EEnemyMovementStatus EnemyMovementStatus;

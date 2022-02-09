@@ -3,17 +3,17 @@
 
 #include "BaseEnemy.h"
 
+#include "AIController.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
+#include "MyUE427Study01/Characters/Player/MainPlayer.h"
 
 // Sets default values
 ABaseEnemy::ABaseEnemy()
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
-	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
-	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 
 	ChaseVolume = CreateDefaultSubobject<USphereComponent>(TEXT("ChaseVolume"));
 	ChaseVolume->SetupAttachment(GetRootComponent());
@@ -29,6 +29,12 @@ ABaseEnemy::ABaseEnemy()
 	AttackVolume->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
 	AttackVolume->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	AttackVolume->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+
+	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+
+	EnemyMovementStatus = EEnemyMovementStatus::EEMS_Idle;
 }
 
 // Called when the game starts or when spawned
@@ -37,10 +43,12 @@ void ABaseEnemy::BeginPlay()
 	Super::BeginPlay();
 
 	ChaseVolume->OnComponentBeginOverlap.AddDynamic(this, &ABaseEnemy::OnChaseVolumeOverlapBegin);
-	ChaseVolume->OnComponentEndOverlap.AddDynamic(this, &ABaseEnemy::ABaseEnemy::OnChaseVolumeOverlapEnd);
+	ChaseVolume->OnComponentEndOverlap.AddDynamic(this, &ABaseEnemy::OnChaseVolumeOverlapEnd);
 
 	AttackVolume->OnComponentBeginOverlap.AddDynamic(this, &ABaseEnemy::OnAttackVolumeOverlapBegin);
 	AttackVolume->OnComponentEndOverlap.AddDynamic(this, &ABaseEnemy::OnAttackVolumeOverlapEnd);
+
+	AIController = Cast<AAIController>(GetController());
 }
 
 // Called every frame
@@ -59,11 +67,35 @@ void ABaseEnemy::OnChaseVolumeOverlapBegin(UPrimitiveComponent* OverlappedCompon
                                            UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
                                            const FHitResult& SweepResult)
 {
+	if (OtherActor)
+	{
+		AMainPlayer* mainPlayer = Cast<AMainPlayer>(OtherActor);
+		if (mainPlayer)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("OnChaseVolumeOverlapBegin"));
+			MoveToTarget(mainPlayer);
+		}
+	}
 }
 
 void ABaseEnemy::OnChaseVolumeOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                                          UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
+	if (OtherActor)
+	{
+		AMainPlayer* mainPlayer = Cast<AMainPlayer>(OtherActor);
+		if (mainPlayer)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("OnChaseVolumeOverlapEnd"));
+
+			EnemyMovementStatus = EEnemyMovementStatus::EEMS_Idle;
+
+			if (AIController)
+			{
+				AIController->StopMovement();
+			}
+		}
+	}
 }
 
 void ABaseEnemy::OnAttackVolumeOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -79,4 +111,20 @@ void ABaseEnemy::OnAttackVolumeOverlapEnd(UPrimitiveComponent* OverlappedCompone
 
 void ABaseEnemy::MoveToTarget(AMainPlayer* targetPlayer)
 {
+	EnemyMovementStatus = EEnemyMovementStatus::EEMS_MoveToTarget;
+	if (AIController)
+	{
+		FAIMoveRequest moveRequest;
+		moveRequest.SetGoalActor(targetPlayer);
+		moveRequest.SetAcceptanceRadius(10.0f);
+		FNavPathSharedPtr navPath;
+		AIController->MoveTo(moveRequest, &navPath);
+
+		auto pathPoints = navPath->GetPathPoints();
+		for (auto point : pathPoints)
+		{
+			FVector location = point.Location;
+			UKismetSystemLibrary::DrawDebugSphere(this, location, 25.0f, 8, FLinearColor::Red, 10.0f, 1.5f);
+		}
+	}
 }
