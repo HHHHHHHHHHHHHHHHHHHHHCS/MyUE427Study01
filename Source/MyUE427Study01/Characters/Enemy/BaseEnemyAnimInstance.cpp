@@ -21,5 +21,7 @@ void UBaseEnemyAnimInstance::UpdateAnimationProperties()
 		const FVector planeSpeed = FVector(speedVec.X, speedVec.Y, 0.0f);
 
 		speed = planeSpeed.Size();
+
+		// float direction = CalculateDirection(baseEnemyRef->GetVelocity(), baseEnemyRef->GetActorRotation());
 	}
 }

@@ -72,7 +72,7 @@ void ABaseEnemy::OnChaseVolumeOverlapBegin(UPrimitiveComponent* OverlappedCompon
 		AMainPlayer* mainPlayer = Cast<AMainPlayer>(OtherActor);
 		if (mainPlayer)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("OnChaseVolumeOverlapBegin"));
+			// UE_LOG(LogTemp, Warning, TEXT("OnChaseVolumeOverlapBegin"));
 			MoveToTarget(mainPlayer);
 		}
 	}
@@ -86,7 +86,7 @@ void ABaseEnemy::OnChaseVolumeOverlapEnd(UPrimitiveComponent* OverlappedComponen
 		AMainPlayer* mainPlayer = Cast<AMainPlayer>(OtherActor);
 		if (mainPlayer)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("OnChaseVolumeOverlapEnd"));
+			// UE_LOG(LogTemp, Warning, TEXT("OnChaseVolumeOverlapEnd"));
 
 			EnemyMovementStatus = EEnemyMovementStatus::EEMS_Idle;
 
@@ -102,11 +102,36 @@ void ABaseEnemy::OnAttackVolumeOverlapBegin(UPrimitiveComponent* OverlappedCompo
                                             UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
                                             const FHitResult& SweepResult)
 {
+	if (OtherActor)
+	{
+		// UE_LOG(LogTemp, Warning, TEXT("OnAttackVolumeOverlapBegin"));
+
+		AMainPlayer* mainPlayer = Cast<AMainPlayer>(OtherActor);
+		if (mainPlayer)
+		{
+			bAttackVolumeOverlapping = true;
+			Attack();
+		}
+	}
 }
 
 void ABaseEnemy::OnAttackVolumeOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                                           UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
+	if (OtherActor)
+	{
+		// UE_LOG(LogTemp, Warning, TEXT("OnAttackVolumeOverlapEnd"));
+	
+		AMainPlayer* mainPlayer = Cast<AMainPlayer>(OtherActor);
+		if (mainPlayer)
+		{
+			bAttackVolumeOverlapping = false;
+			if(EnemyMovementStatus != EEnemyMovementStatus::EEMS_Attacking)
+			{
+				MoveToTarget(mainPlayer);
+			}
+		}
+	}
 }
 
 void ABaseEnemy::MoveToTarget(AMainPlayer* targetPlayer)
@@ -126,5 +151,36 @@ void ABaseEnemy::MoveToTarget(AMainPlayer* targetPlayer)
 			FVector location = point.Location;
 			UKismetSystemLibrary::DrawDebugSphere(this, location, 25.0f, 8, FLinearColor::Red, 10.0f, 1.5f);
 		}
+	}
+}
+
+void ABaseEnemy::Attack()
+{
+	if(AIController)
+	{
+		AIController->StopMovement();
+	}
+	
+	if (EnemyMovementStatus != EEnemyMovementStatus::EEMS_Attacking)
+	{
+		EnemyMovementStatus = EEnemyMovementStatus::EEMS_Attacking;
+
+		UAnimInstance* animInstance = GetMesh()->GetAnimInstance();
+		if (animInstance && attackMontage)
+		{
+			float playRate = FMath::RandRange(0.9f, 1.1f);
+			FString sectionName = FString::FromInt(FMath::RandRange(1, 3));
+			animInstance->Montage_Play(attackMontage, playRate);
+			animInstance->Montage_JumpToSection(FName(*sectionName), attackMontage);
+		}
+	}
+}
+
+void ABaseEnemy::AttackEnd()
+{
+	EnemyMovementStatus = EEnemyMovementStatus::EEMS_Idle;
+	if(bAttackVolumeOverlapping)
+	{
+		Attack();
 	}
 }

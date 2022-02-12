@@ -20,7 +20,7 @@ public:
 	float speed;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Animation Properties")
-	ABaseEnemy* baseEnemyRef;
+	class ABaseEnemy* baseEnemyRef;
 
 public :
 	virtual void NativeInitializeAnimation() override;

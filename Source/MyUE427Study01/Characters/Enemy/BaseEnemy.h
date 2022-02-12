@@ -29,12 +29,18 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="AI")
 	USphereComponent* AttackVolume;
-	
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="AI")
 	class AAIController* AIController;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Enemy Stats")
 	EEnemyMovementStatus EnemyMovementStatus;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Attack")
+	bool bAttackVolumeOverlapping;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Attack")
+	class UAnimMontage* attackMontage;
 
 protected:
 	// Called when the game starts or when spawned
@@ -65,5 +71,11 @@ public:
 	virtual void OnAttackVolumeOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	                                      UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
+	UFUNCTION(BlueprintCallable)
 	void MoveToTarget(class AMainPlayer* targetPlayer);
+
+	void Attack();
+
+	UFUNCTION(BlueprintCallable)
+	void AttackEnd();
 };
