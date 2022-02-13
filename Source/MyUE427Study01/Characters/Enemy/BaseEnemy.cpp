@@ -73,6 +73,7 @@ void ABaseEnemy::OnChaseVolumeOverlapBegin(UPrimitiveComponent* OverlappedCompon
 		if (mainPlayer)
 		{
 			// UE_LOG(LogTemp, Warning, TEXT("OnChaseVolumeOverlapBegin"));
+			mainPlayer->UpdateAttackTarget();
 			MoveToTarget(mainPlayer);
 		}
 	}

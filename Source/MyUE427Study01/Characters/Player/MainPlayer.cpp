@@ -10,6 +10,8 @@
 #include "Animation/AnimMontage.h"
 
 #include "MyUE427Study01/Gameplay/WeaponItem.h"
+#include "MyUE427Study01/Characters/Enemy/BaseEnemy.h"
+
 
 // Sets default values
 AMainPlayer::AMainPlayer()
@@ -60,6 +62,8 @@ AMainPlayer::AMainPlayer()
 
 	bHasWeapon = false;
 	bIsAttacking = false;
+
+	attackTarget = nullptr;
 }
 
 // Called when the game starts or when spawned
@@ -384,4 +388,36 @@ void AMainPlayer::AttackEnd()
 	{
 		AttackKeyDown();
 	}
+}
+
+void AMainPlayer::UpdateAttackTarget()
+{
+	TArray<AActor*> overlappingActors;
+	GetOverlappingActors(overlappingActors, enemyFilter);
+
+	if (overlappingActors.Num() == 0)
+	{
+		attackTarget = nullptr;
+		return;
+	}
+
+	ABaseEnemy* closestEnemy = nullptr;
+	float minDistance = FLT_MAX;
+	const FVector location = GetActorLocation();
+
+	for (const auto& actor : overlappingActors)
+	{
+		ABaseEnemy* enemy = Cast<ABaseEnemy>(actor);
+		if (enemy && enemy->EnemyMovementStatus != EEnemyMovementStatus::EEMS_Dead)
+		{
+			float dist = (enemy->GetActorLocation() - location).SizeSquared();
+			if (dist < minDistance)
+			{
+				minDistance = dist;
+				closestEnemy = enemy;
+			}
+		}
+	}
+
+	attackTarget = closestEnemy;
 }

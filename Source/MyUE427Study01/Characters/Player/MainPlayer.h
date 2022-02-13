@@ -96,6 +96,10 @@ private:
 
 	bool bIsAttacking;
 
+	class ABaseEnemy* attackTarget;
+
+	TSubclassOf<ABaseEnemy> enemyFilter;
+
 
 protected:
 	// Called when the game starts or when spawned
@@ -162,4 +166,6 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void AttackEnd();
+
+	void UpdateAttackTarget();
 };
