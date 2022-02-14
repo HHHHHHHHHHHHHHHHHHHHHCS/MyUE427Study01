@@ -42,6 +42,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Attack")
 	class UAnimMontage* attackMontage;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Attack")
+	float interpSpeed;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Attack")
+	bool bInterpToPlayer;
+
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

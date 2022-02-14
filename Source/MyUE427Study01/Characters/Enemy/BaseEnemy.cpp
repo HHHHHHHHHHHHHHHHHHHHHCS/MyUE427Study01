@@ -6,6 +6,8 @@
 #include "AIController.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "MyUE427Study01/Characters/Player/MainPlayer.h"
 
@@ -35,6 +37,10 @@ ABaseEnemy::ABaseEnemy()
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
 	EnemyMovementStatus = EEnemyMovementStatus::EEMS_Idle;
+	
+	bAttackVolumeOverlapping = false;
+	interpSpeed = 15.0f;
+	bInterpToPlayer = false;
 }
 
 // Called when the game starts or when spawned
@@ -55,6 +61,15 @@ void ABaseEnemy::BeginPlay()
 void ABaseEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (bInterpToPlayer)
+	{
+		const FVector playerLocation = UGameplayStatics::GetPlayerPawn(this, 0)->GetActorLocation();
+		const float yaw = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), playerLocation).Yaw;
+		FRotator rot = GetActorRotation();
+		rot.Yaw = FMath::FInterpTo(rot.Yaw, yaw, DeltaTime, interpSpeed);
+		SetActorRotation(rot);
+	}
 }
 
 // Called to bind functionality to input
@@ -105,7 +120,7 @@ void ABaseEnemy::OnAttackVolumeOverlapBegin(UPrimitiveComponent* OverlappedCompo
 {
 	if (OtherActor)
 	{
-		// UE_LOG(LogTemp, Warning, TEXT("OnAttackVolumeOverlapBegin"));
+		UE_LOG(LogTemp, Warning, TEXT("OnAttackVolumeOverlapBegin"));
 
 		AMainPlayer* mainPlayer = Cast<AMainPlayer>(OtherActor);
 		if (mainPlayer)
@@ -121,13 +136,13 @@ void ABaseEnemy::OnAttackVolumeOverlapEnd(UPrimitiveComponent* OverlappedCompone
 {
 	if (OtherActor)
 	{
-		// UE_LOG(LogTemp, Warning, TEXT("OnAttackVolumeOverlapEnd"));
-	
+		UE_LOG(LogTemp, Warning, TEXT("OnAttackVolumeOverlapEnd"));
+
 		AMainPlayer* mainPlayer = Cast<AMainPlayer>(OtherActor);
 		if (mainPlayer)
 		{
 			bAttackVolumeOverlapping = false;
-			if(EnemyMovementStatus != EEnemyMovementStatus::EEMS_Attacking)
+			if (EnemyMovementStatus != EEnemyMovementStatus::EEMS_Attacking)
 			{
 				MoveToTarget(mainPlayer);
 			}
@@ -146,25 +161,28 @@ void ABaseEnemy::MoveToTarget(AMainPlayer* targetPlayer)
 		FNavPathSharedPtr navPath;
 		AIController->MoveTo(moveRequest, &navPath);
 
-		auto pathPoints = navPath->GetPathPoints();
-		for (auto point : pathPoints)
-		{
-			FVector location = point.Location;
-			UKismetSystemLibrary::DrawDebugSphere(this, location, 25.0f, 8, FLinearColor::Red, 10.0f, 1.5f);
-		}
+		// auto pathPoints = navPath->GetPathPoints();
+		// for (auto point : pathPoints)
+		// {
+		// 	FVector location = point.Location;
+		// 	UKismetSystemLibrary::DrawDebugSphere(this, location, 25.0f, 8, FLinearColor::Red, 10.0f, 1.5f);
+		// }
+
 	}
 }
 
 void ABaseEnemy::Attack()
 {
-	if(AIController)
+	if (AIController)
 	{
 		AIController->StopMovement();
 	}
-	
+
 	if (EnemyMovementStatus != EEnemyMovementStatus::EEMS_Attacking)
 	{
 		EnemyMovementStatus = EEnemyMovementStatus::EEMS_Attacking;
+
+		bInterpToPlayer = true;
 
 		UAnimInstance* animInstance = GetMesh()->GetAnimInstance();
 		if (animInstance && attackMontage)
@@ -180,7 +198,8 @@ void ABaseEnemy::Attack()
 void ABaseEnemy::AttackEnd()
 {
 	EnemyMovementStatus = EEnemyMovementStatus::EEMS_Idle;
-	if(bAttackVolumeOverlapping)
+	bInterpToPlayer = false;
+	if (bAttackVolumeOverlapping)
 	{
 		Attack();
 	}

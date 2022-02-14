@@ -80,6 +80,13 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Animation")
 	class UAnimMontage* attackMontage;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Attack")
+	TSubclassOf<class ABaseEnemy> enemyFilter;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Attack")
+	float interpSpeed;
+
+
 private:
 	bool bLeftShiftKeyDown;
 
@@ -96,10 +103,10 @@ private:
 
 	bool bIsAttacking;
 
-	class ABaseEnemy* attackTarget;
+	ABaseEnemy* attackTarget;
 
-	TSubclassOf<ABaseEnemy> enemyFilter;
-
+	// UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Attack")
+	bool bInterpToEnemy;
 
 protected:
 	// Called when the game starts or when spawned

@@ -8,6 +8,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Animation/AnimInstance.h"
 #include "Animation/AnimMontage.h"
+#include "Kismet/KismetMathLibrary.h"
 
 #include "MyUE427Study01/Gameplay/WeaponItem.h"
 #include "MyUE427Study01/Characters/Enemy/BaseEnemy.h"
@@ -62,8 +63,9 @@ AMainPlayer::AMainPlayer()
 
 	bHasWeapon = false;
 	bIsAttacking = false;
-
 	attackTarget = nullptr;
+	interpSpeed = 15.0f;
+	bInterpToEnemy = false;
 }
 
 // Called when the game starts or when spawned
@@ -127,8 +129,17 @@ void AMainPlayer::Tick(float DeltaTime)
 			}
 			LeftShiftKeyUp();
 			SetMovementStatus(EPlayerMovementStatus::EPMS_Normal);
+			break;
 		}
-	default: ;
+	default: break;
+	}
+
+	if (bInterpToEnemy && attackTarget)
+	{
+		const float yaw = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), attackTarget->GetActorLocation()).Yaw;
+		FRotator rot = GetActorRotation();
+		rot.Yaw = FMath::FInterpTo(rot.Yaw, yaw, DeltaTime, interpSpeed);
+		SetActorRotation(rot);
 	}
 }
 
@@ -368,6 +379,7 @@ void AMainPlayer::Attack()
 	if (!bIsAttacking && !GetMovementComponent()->IsFalling())
 	{
 		bIsAttacking = true;
+		bInterpToEnemy = true;
 
 		UAnimInstance* animInstance = GetMesh()->GetAnimInstance();
 		if (animInstance && attackMontage)
@@ -383,6 +395,7 @@ void AMainPlayer::Attack()
 void AMainPlayer::AttackEnd()
 {
 	bIsAttacking = false;
+	bInterpToEnemy = false;
 
 	if (bAttackKeyDown)
 	{
