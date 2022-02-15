@@ -8,7 +8,10 @@
 #include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "Kismet/KismetSystemLibrary.h"
+#include "Blueprint/UserWidget.h"
+#include "Components/WidgetComponent.h"
+#include "Components/ProgressBar.h"
+
 #include "MyUE427Study01/Characters/Player/MainPlayer.h"
 
 // Sets default values
@@ -32,15 +35,23 @@ ABaseEnemy::ABaseEnemy()
 	AttackVolume->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	AttackVolume->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
 
+	healthBarWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthBarWidgetComponent"));
+	healthBarWidgetComponent->SetupAttachment(GetRootComponent());
+	healthBarWidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
+	healthBarWidgetComponent->SetDrawSize(FVector2D(125.0f, 10.0f));
+
 	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
 	EnemyMovementStatus = EEnemyMovementStatus::EEMS_Idle;
-	
+
 	bAttackVolumeOverlapping = false;
 	interpSpeed = 15.0f;
 	bInterpToPlayer = false;
+
+	maxHealth = 150.0f;
+	health = maxHealth;
 }
 
 // Called when the game starts or when spawned
@@ -53,6 +64,10 @@ void ABaseEnemy::BeginPlay()
 
 	AttackVolume->OnComponentBeginOverlap.AddDynamic(this, &ABaseEnemy::OnAttackVolumeOverlapBegin);
 	AttackVolume->OnComponentEndOverlap.AddDynamic(this, &ABaseEnemy::OnAttackVolumeOverlapEnd);
+
+	healthBar = Cast<UProgressBar>(healthBarWidgetComponent->GetUserWidgetObject()->GetWidgetFromName("HealthBar"));
+	healthBar->SetPercent(health / maxHealth);
+	healthBar->SetVisibility(ESlateVisibility::Visible);
 
 	AIController = Cast<AAIController>(GetController());
 }
@@ -103,7 +118,7 @@ void ABaseEnemy::OnChaseVolumeOverlapEnd(UPrimitiveComponent* OverlappedComponen
 		if (mainPlayer)
 		{
 			// UE_LOG(LogTemp, Warning, TEXT("OnChaseVolumeOverlapEnd"));
-
+			healthBar->SetVisibility(ESlateVisibility::Hidden);
 			EnemyMovementStatus = EEnemyMovementStatus::EEMS_Idle;
 
 			if (AIController)
@@ -167,7 +182,6 @@ void ABaseEnemy::MoveToTarget(AMainPlayer* targetPlayer)
 		// 	FVector location = point.Location;
 		// 	UKismetSystemLibrary::DrawDebugSphere(this, location, 25.0f, 8, FLinearColor::Red, 10.0f, 1.5f);
 		// }
-
 	}
 }
 

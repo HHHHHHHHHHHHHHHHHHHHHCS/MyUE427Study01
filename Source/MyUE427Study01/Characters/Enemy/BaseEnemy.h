@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/ProgressBar.h"
 #include "GameFramework/Character.h"
 #include "BaseEnemy.generated.h"
 
@@ -33,9 +34,6 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="AI")
 	class AAIController* AIController;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Enemy Stats")
-	EEnemyMovementStatus EnemyMovementStatus;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Attack")
 	bool bAttackVolumeOverlapping;
 
@@ -48,7 +46,21 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Attack")
 	bool bInterpToPlayer;
 
-	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Enemy Stats")
+	EEnemyMovementStatus EnemyMovementStatus;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Enemy Stats")
+	float health;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Enemy Stats")
+	float maxHealth;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Enemy Stats")
+	class UWidgetComponent* healthBarWidgetComponent;
+
+private:
+	class UProgressBar* healthBar;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
