@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/BoxComponent.h"
 #include "GameFramework/Character.h"
 #include "MainPlayer.generated.h"
 
@@ -85,7 +86,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Attack")
 	float interpSpeed;
-
 
 private:
 	bool bLeftShiftKeyDown;
@@ -175,4 +175,6 @@ public:
 	void AttackEnd();
 
 	void UpdateAttackTarget();
+
+
 };

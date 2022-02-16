@@ -37,8 +37,8 @@ void AInteractableItem::BeginPlay()
 {
 	Super::BeginPlay();
 
-	TriggerVolume->OnComponentBeginOverlap.AddDynamic(this, &AInteractableItem::OnOverlapBegin);
-	TriggerVolume->OnComponentEndOverlap.AddDynamic(this, &AInteractableItem::OnOverlapEnd);
+	TriggerVolume->OnComponentBeginOverlap.AddDynamic(this, &AInteractableItem::OnPickOverlapBegin);
+	TriggerVolume->OnComponentEndOverlap.AddDynamic(this, &AInteractableItem::OnPickOverlapEnd);
 }
 
 // Called every frame
@@ -54,13 +54,13 @@ void AInteractableItem::Tick(float DeltaTime)
 	}
 }
 
-void AInteractableItem::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+void AInteractableItem::OnPickOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                                        UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
                                        const FHitResult& SweepResult)
 {
 }
 
-void AInteractableItem::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+void AInteractableItem::OnPickOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                                      UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 }

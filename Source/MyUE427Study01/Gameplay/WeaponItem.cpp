@@ -37,18 +37,25 @@ AWeaponItem::AWeaponItem()
 	resetScale = GetActorScale();
 
 	ActiveDisplayMeshCollision();
+
+	attackCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("AttackCollision"));
+	attackCollision->SetupAttachment(GetRootComponent());
+	DeactiveDisplayMeshCollision();
 }
 
 
 void AWeaponItem::BeginPlay()
 {
 	Super::BeginPlay();
+
+	attackCollision->OnComponentBeginOverlap.AddDynamic(this, &AWeaponItem::OnAttackCollisionOverlapBegin);
+	attackCollision->OnComponentEndOverlap.AddDynamic(this, &AWeaponItem::OnAttackCollisionOverlapEnd);
 }
 
 
-void AWeaponItem::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-                                 UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
-                                 const FHitResult& SweepResult)
+void AWeaponItem::OnPickOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+                                     UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
+                                     const FHitResult& SweepResult)
 {
 	if (OtherActor && WeaponState == EWeaponState::EWS_CanPickup)
 	{
@@ -60,8 +67,8 @@ void AWeaponItem::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActo
 	}
 }
 
-void AWeaponItem::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-                               UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+void AWeaponItem::OnPickOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+                                   UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	if (OtherActor)
 	{
@@ -134,4 +141,29 @@ void AWeaponItem::DeactiveDisplayMeshCollision()
 {
 	TriggerVolume->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	DisplayMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+
+void AWeaponItem::OnAttackCollisionOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+                                                UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
+                                                const FHitResult& SweepResult)
+{
+}
+
+void AWeaponItem::OnAttackCollisionOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+                                              UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+}
+
+void AWeaponItem::ActiveAttackCollision()
+{
+	attackCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	attackCollision->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+	attackCollision->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	attackCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+}
+
+void AWeaponItem::DeactiveAttackCollision()
+{
+	attackCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }

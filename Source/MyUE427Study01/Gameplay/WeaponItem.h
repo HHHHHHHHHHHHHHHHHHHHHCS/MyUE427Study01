@@ -37,26 +37,53 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Weapon")
 	EWeaponState WeaponState;
 
-public:
-	virtual void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	                            UPrimitiveComponent* OtherComp,
-	                            int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Weapon|Attack")
+	class UBoxComponent* attackCollision;
 
-	virtual void OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	                          UPrimitiveComponent* OtherComp,
-	                          int32 OtherBodyIndex) override;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapom|Attack")
+	float damage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapom|Attack")
+	TSubclassOf<UDamageType> damageTypeClass;
+
+private:
+	// UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Weapon|Attack")
+	class AController* weaponOwner;
+
+public:
+	virtual void OnPickOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	                                UPrimitiveComponent* OtherComp,
+	                                int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
+
+	virtual void OnPickOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	                              UPrimitiveComponent* OtherComp,
+	                              int32 OtherBodyIndex) override;
 
 	void Equip(class AMainPlayer* mainPlayer);
 
 	void UnEquip(AMainPlayer* mainPlayer);
 
+	UFUNCTION()
+	virtual void OnAttackCollisionOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	                                           UPrimitiveComponent* OtherComp,
+	                                           int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	virtual void OnAttackCollisionOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	                                         UPrimitiveComponent* OtherComp,
+	                                         int32 OtherBodyIndex);
+
+	UFUNCTION(BlueprintCallable)
+	void ActiveAttackCollision();
+
+	UFUNCTION(BlueprintCallable)
+	void DeactiveAttackCollision();
+
 protected:
 	virtual void BeginPlay() override;
 
 private:
-
 	void ActiveDisplayMeshCollision();
 
 	void DeactiveDisplayMeshCollision();
-
 };
