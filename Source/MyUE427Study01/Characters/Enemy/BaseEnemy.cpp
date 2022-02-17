@@ -135,7 +135,7 @@ void ABaseEnemy::OnAttackVolumeOverlapBegin(UPrimitiveComponent* OverlappedCompo
 {
 	if (OtherActor)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("OnAttackVolumeOverlapBegin"));
+		// UE_LOG(LogTemp, Warning, TEXT("OnAttackVolumeOverlapBegin"));
 
 		AMainPlayer* mainPlayer = Cast<AMainPlayer>(OtherActor);
 		if (mainPlayer)
@@ -151,7 +151,7 @@ void ABaseEnemy::OnAttackVolumeOverlapEnd(UPrimitiveComponent* OverlappedCompone
 {
 	if (OtherActor)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("OnAttackVolumeOverlapEnd"));
+		// UE_LOG(LogTemp, Warning, TEXT("OnAttackVolumeOverlapEnd"));
 
 		AMainPlayer* mainPlayer = Cast<AMainPlayer>(OtherActor);
 		if (mainPlayer)

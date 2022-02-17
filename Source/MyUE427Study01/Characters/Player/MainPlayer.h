@@ -81,6 +81,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Animation")
 	class UAnimMontage* attackMontage;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon)
+	class AWeaponItem* equippedWeapon;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Attack")
 	TSubclassOf<class ABaseEnemy> enemyFilter;
 
@@ -93,8 +96,7 @@ private:
 	// UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon)
 	bool bHasWeapon;
 
-	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon)
-	class AWeaponItem* equippedWeapon;
+
 
 	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon)
 	AWeaponItem* overlappingWeapon;

@@ -6,7 +6,6 @@
 #include"Components/SkeletalMeshComponent.h"
 #include "Components/SphereComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
-#include "GameFramework/PawnMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
 #include "Particles/ParticleSystemComponent.h"
@@ -39,8 +38,8 @@ AWeaponItem::AWeaponItem()
 	ActiveDisplayMeshCollision();
 
 	attackCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("AttackCollision"));
-	attackCollision->SetupAttachment(GetRootComponent());
-	DeactiveDisplayMeshCollision();
+	attackCollision->SetupAttachment(DisplayMesh,"WeaponSocket");
+	DeactiveAttackCollision();
 }
 
 
