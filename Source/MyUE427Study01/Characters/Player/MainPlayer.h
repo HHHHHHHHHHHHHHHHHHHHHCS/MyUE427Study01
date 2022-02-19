@@ -96,8 +96,6 @@ private:
 	// UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon)
 	bool bHasWeapon;
 
-
-
 	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon)
 	AWeaponItem* overlappingWeapon;
 
@@ -163,7 +161,7 @@ public:
 
 	void UnEquipWeapon(AWeaponItem* weaponItem);
 
-	//如果写const 蓝图读取 类型会报错
+	//如果写const 蓝图读取 类型会报错 莫名其妙
 	UFUNCTION(BlueprintPure)
 	FORCEINLINE bool GetHasWeapon() { return bHasWeapon; }
 
@@ -177,6 +175,4 @@ public:
 	void AttackEnd();
 
 	void UpdateAttackTarget();
-
-
 };

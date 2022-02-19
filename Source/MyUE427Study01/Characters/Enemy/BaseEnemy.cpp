@@ -35,6 +35,14 @@ ABaseEnemy::ABaseEnemy()
 	AttackVolume->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	AttackVolume->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
 
+	leftAttackCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("LeftAttackCollsion"));
+	leftAttackCollision->SetupAttachment(GetMesh(), FName("LeftAttackSocket"));
+	DeactiveLeftAttackCollision();
+
+	rightAttackCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("RightAttackCollsion"));
+	rightAttackCollision->SetupAttachment(GetMesh(), FName("RightAttackSocket"));
+	DeactiveRightAttackCollision();
+
 	healthBarWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthBarWidgetComponent"));
 	healthBarWidgetComponent->SetupAttachment(GetRootComponent());
 	healthBarWidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
@@ -52,6 +60,8 @@ ABaseEnemy::ABaseEnemy()
 
 	maxHealth = 150.0f;
 	health = maxHealth;
+
+	damage = 10.0f;
 }
 
 // Called when the game starts or when spawned
@@ -64,6 +74,12 @@ void ABaseEnemy::BeginPlay()
 
 	AttackVolume->OnComponentBeginOverlap.AddDynamic(this, &ABaseEnemy::OnAttackVolumeOverlapBegin);
 	AttackVolume->OnComponentEndOverlap.AddDynamic(this, &ABaseEnemy::OnAttackVolumeOverlapEnd);
+
+	leftAttackCollision->OnComponentBeginOverlap.AddDynamic(this, &ABaseEnemy::OnLeftAttackCollisionOverlapBegin);
+	leftAttackCollision->OnComponentEndOverlap.AddDynamic(this, &ABaseEnemy::OnLeftAttackCollisionOverlapEnd);
+
+	rightAttackCollision->OnComponentBeginOverlap.AddDynamic(this, &ABaseEnemy::OnRightAttackCollisionOverlapBegin);
+	rightAttackCollision->OnComponentEndOverlap.AddDynamic(this, &ABaseEnemy::OnRightAttackCollisionOverlapEnd);
 
 	healthBar = Cast<UProgressBar>(healthBarWidgetComponent->GetUserWidgetObject()->GetWidgetFromName("HealthBar"));
 	healthBar->SetPercent(health / maxHealth);
@@ -165,6 +181,28 @@ void ABaseEnemy::OnAttackVolumeOverlapEnd(UPrimitiveComponent* OverlappedCompone
 	}
 }
 
+void ABaseEnemy::OnLeftAttackCollisionOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+                                                   UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
+                                                   bool bFromSweep, const FHitResult& SweepResult)
+{
+}
+
+void ABaseEnemy::OnLeftAttackCollisionOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+                                                 UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+}
+
+void ABaseEnemy::OnRightAttackCollisionOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+                                                    UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
+                                                    bool bFromSweep, const FHitResult& SweepResult)
+{
+}
+
+void ABaseEnemy::OnRightAttackCollisionOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+                                                  UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+}
+
 void ABaseEnemy::MoveToTarget(AMainPlayer* targetPlayer)
 {
 	EnemyMovementStatus = EEnemyMovementStatus::EEMS_MoveToTarget;
@@ -217,4 +255,30 @@ void ABaseEnemy::AttackEnd()
 	{
 		Attack();
 	}
+}
+
+void ABaseEnemy::ActiveLeftAttackCollision()
+{
+	leftAttackCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	leftAttackCollision->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+	leftAttackCollision->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	leftAttackCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+}
+
+void ABaseEnemy::DeactiveLeftAttackCollision()
+{
+	leftAttackCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+void ABaseEnemy::ActiveRightAttackCollision()
+{
+	rightAttackCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	rightAttackCollision->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+	rightAttackCollision->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	rightAttackCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+}
+
+void ABaseEnemy::DeactiveRightAttackCollision()
+{
+	rightAttackCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }

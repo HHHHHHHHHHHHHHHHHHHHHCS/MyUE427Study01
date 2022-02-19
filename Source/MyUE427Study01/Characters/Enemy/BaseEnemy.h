@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/BoxComponent.h"
 #include "Components/ProgressBar.h"
 #include "GameFramework/Character.h"
 #include "BaseEnemy.generated.h"
@@ -34,6 +35,18 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="AI")
 	class AAIController* AIController;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Enemy Stats")
+	EEnemyMovementStatus EnemyMovementStatus;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Enemy Stats")
+	float health;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Enemy Stats")
+	float maxHealth;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Enemy Stats")
+	class UWidgetComponent* healthBarWidgetComponent;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Attack")
 	bool bAttackVolumeOverlapping;
 
@@ -46,17 +59,17 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Attack")
 	bool bInterpToPlayer;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Enemy Stats")
-	EEnemyMovementStatus EnemyMovementStatus;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Attack")
+	class UBoxComponent* leftAttackCollision;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Enemy Stats")
-	float health;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Attack")
+	UBoxComponent* rightAttackCollision;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Enemy Stats")
-	float maxHealth;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Attack")
+	float damage;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Enemy Stats")
-	class UWidgetComponent* healthBarWidgetComponent;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Attack")
+	TSubclassOf<UDamageType> damageTypeClass;
 
 private:
 	class UProgressBar* healthBar;
@@ -90,6 +103,26 @@ public:
 	virtual void OnAttackVolumeOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	                                      UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
+	UFUNCTION()
+	virtual void OnLeftAttackCollisionOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+											   UPrimitiveComponent* OtherComp,
+											   int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	virtual void OnLeftAttackCollisionOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+											 UPrimitiveComponent* OtherComp,
+											 int32 OtherBodyIndex);
+
+	UFUNCTION()
+	virtual void OnRightAttackCollisionOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+											   UPrimitiveComponent* OtherComp,
+											   int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	virtual void OnRightAttackCollisionOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+											 UPrimitiveComponent* OtherComp,
+											 int32 OtherBodyIndex);
+	
 	UFUNCTION(BlueprintCallable)
 	void MoveToTarget(class AMainPlayer* targetPlayer);
 
@@ -97,4 +130,16 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void AttackEnd();
+
+	UFUNCTION(BlueprintCallable)
+	void ActiveLeftAttackCollision();
+
+	UFUNCTION(BlueprintCallable)
+	void DeactiveLeftAttackCollision();
+
+	UFUNCTION(BlueprintCallable)
+	void ActiveRightAttackCollision();
+
+	UFUNCTION(BlueprintCallable)
+	void DeactiveRightAttackCollision();
 };
