@@ -15,7 +15,7 @@ void UBaseEnemyAnimInstance::UpdateAnimationProperties()
 		baseEnemyRef = Cast<ABaseEnemy>(TryGetPawnOwner());
 	}
 
-	if(baseEnemyRef)
+	if (baseEnemyRef)
 	{
 		const FVector speedVec = baseEnemyRef->GetVelocity();
 		const FVector planeSpeed = FVector(speedVec.X, speedVec.Y, 0.0f);

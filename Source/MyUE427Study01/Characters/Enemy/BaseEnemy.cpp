@@ -11,6 +11,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Components/WidgetComponent.h"
 #include "Components/ProgressBar.h"
+#include "Engine/SkeletalMeshSocket.h"
 
 #include "MyUE427Study01/Characters/Player/MainPlayer.h"
 
@@ -185,6 +186,31 @@ void ABaseEnemy::OnLeftAttackCollisionOverlapBegin(UPrimitiveComponent* Overlapp
                                                    UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
                                                    bool bFromSweep, const FHitResult& SweepResult)
 {
+	if (OtherActor)
+	{
+		AMainPlayer* mainPlayer = Cast<AMainPlayer>(OtherActor);
+		if (mainPlayer)
+		{
+			if (mainPlayer->hitParticles)
+			{
+				USkeletalMeshComponent* mesh = GetMesh();
+				const USkeletalMeshSocket* attackSocket = mesh->GetSocketByName("LeftAttackSocket");
+				if (attackSocket)
+				{
+					const FVector socketLocation = attackSocket->GetSocketLocation(mesh);
+					UGameplayStatics::SpawnEmitterAtLocation(this, mainPlayer->hitParticles, socketLocation,FRotator(0.0f));
+				}
+			}
+			if (mainPlayer->hitSound)
+			{
+				UGameplayStatics::PlaySound2D(this, mainPlayer->hitSound);
+			}
+			if (damageTypeClass)
+			{
+				UGameplayStatics::ApplyDamage(mainPlayer, damage, AIController, this, damageTypeClass);
+			}
+		}
+	}
 }
 
 void ABaseEnemy::OnLeftAttackCollisionOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -196,6 +222,31 @@ void ABaseEnemy::OnRightAttackCollisionOverlapBegin(UPrimitiveComponent* Overlap
                                                     UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
                                                     bool bFromSweep, const FHitResult& SweepResult)
 {
+	if (OtherActor)
+    	{
+    		AMainPlayer* mainPlayer = Cast<AMainPlayer>(OtherActor);
+    		if (mainPlayer)
+    		{
+    			if (mainPlayer->hitParticles)
+    			{
+    				USkeletalMeshComponent* mesh = GetMesh();
+    				const USkeletalMeshSocket* attackSocket = mesh->GetSocketByName("RightAttackSocket");
+    				if (attackSocket)
+    				{
+    					const FVector socketLocation = attackSocket->GetSocketLocation(mesh);
+    					UGameplayStatics::SpawnEmitterAtLocation(this, mainPlayer->hitParticles, socketLocation,FRotator(0.0f));
+    				}
+    			}
+    			if (mainPlayer->hitSound)
+    			{
+    				UGameplayStatics::PlaySound2D(this, mainPlayer->hitSound);
+    			}
+    			if (damageTypeClass)
+    			{
+    				UGameplayStatics::ApplyDamage(mainPlayer, damage, AIController, this, damageTypeClass);
+    			}
+    		}
+    	}
 }
 
 void ABaseEnemy::OnRightAttackCollisionOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,

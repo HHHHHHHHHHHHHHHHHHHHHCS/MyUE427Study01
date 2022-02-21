@@ -71,6 +71,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Attack")
 	TSubclassOf<UDamageType> damageTypeClass;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Hit Effect")
+	class UParticleSystem* hitParticles;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Hit Effect")
+	class USoundCue* hitSound;
+
+
 private:
 	class UProgressBar* healthBar;
 
@@ -105,24 +112,26 @@ public:
 
 	UFUNCTION()
 	virtual void OnLeftAttackCollisionOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-											   UPrimitiveComponent* OtherComp,
-											   int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	                                               UPrimitiveComponent* OtherComp,
+	                                               int32 OtherBodyIndex, bool bFromSweep,
+	                                               const FHitResult& SweepResult);
 
 	UFUNCTION()
 	virtual void OnLeftAttackCollisionOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-											 UPrimitiveComponent* OtherComp,
-											 int32 OtherBodyIndex);
+	                                             UPrimitiveComponent* OtherComp,
+	                                             int32 OtherBodyIndex);
 
 	UFUNCTION()
 	virtual void OnRightAttackCollisionOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-											   UPrimitiveComponent* OtherComp,
-											   int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	                                                UPrimitiveComponent* OtherComp,
+	                                                int32 OtherBodyIndex, bool bFromSweep,
+	                                                const FHitResult& SweepResult);
 
 	UFUNCTION()
 	virtual void OnRightAttackCollisionOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-											 UPrimitiveComponent* OtherComp,
-											 int32 OtherBodyIndex);
-	
+	                                              UPrimitiveComponent* OtherComp,
+	                                              int32 OtherBodyIndex);
+
 	UFUNCTION(BlueprintCallable)
 	void MoveToTarget(class AMainPlayer* targetPlayer);
 

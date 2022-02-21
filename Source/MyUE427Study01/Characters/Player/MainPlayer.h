@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/BoxComponent.h"
 #include "GameFramework/Character.h"
+#include "Sound/SoundCue.h"
 #include "MainPlayer.generated.h"
 
 UENUM(BlueprintType)
@@ -83,12 +84,18 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon)
 	class AWeaponItem* equippedWeapon;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Attack")
 	TSubclassOf<class ABaseEnemy> enemyFilter;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Attack")
 	float interpSpeed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Hit Effect")
+	class UParticleSystem* hitParticles;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Hit Effect")
+	class USoundCue* hitSound;
 
 private:
 	bool bLeftShiftKeyDown;

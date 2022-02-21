@@ -11,6 +11,7 @@
 #include "Particles/ParticleSystemComponent.h"
 #include "UObject/ConstructorHelpers.h"
 
+#include "MyUE427Study01/Characters/Enemy/BaseEnemy.h"
 #include "MyUE427Study01/Characters/Player/MainPlayer.h"
 
 AWeaponItem::AWeaponItem()
@@ -38,8 +39,10 @@ AWeaponItem::AWeaponItem()
 	ActiveDisplayMeshCollision();
 
 	attackCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("AttackCollision"));
-	attackCollision->SetupAttachment(DisplayMesh,"WeaponSocket");
+	attackCollision->SetupAttachment(DisplayMesh, "WeaponSocket");
 	DeactiveAttackCollision();
+
+	damage = 25.0f;
 }
 
 
@@ -147,6 +150,32 @@ void AWeaponItem::OnAttackCollisionOverlapBegin(UPrimitiveComponent* OverlappedC
                                                 UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
                                                 const FHitResult& SweepResult)
 {
+	if (OtherActor)
+	{
+		ABaseEnemy* baseEnemy = Cast<ABaseEnemy>(OtherActor);
+		if (baseEnemy)
+		{
+			if (baseEnemy->hitParticles)
+			{
+				USkeletalMeshComponent* sm = static_cast<USkeletalMeshComponent*>(DisplayMesh);
+				const USkeletalMeshSocket* weaponSocket = sm->GetSocketByName("WeaponSocket");
+				if (weaponSocket)
+				{
+					const FVector socketLocation = weaponSocket->GetSocketLocation(sm);
+					UGameplayStatics::SpawnEmitterAtLocation(this, baseEnemy->hitParticles, socketLocation,
+					                                         FRotator(0.0f));
+				}
+			}
+			if (baseEnemy->hitSound)
+			{
+				UGameplayStatics::PlaySound2D(this, baseEnemy->hitSound);
+			}
+			if (damageTypeClass)
+			{
+				UGameplayStatics::ApplyDamage(baseEnemy, damage, weaponOwner, this, damageTypeClass);
+			}
+		}
+	}
 }
 
 void AWeaponItem::OnAttackCollisionOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
