@@ -42,7 +42,7 @@ AWeaponItem::AWeaponItem()
 	attackCollision->SetupAttachment(DisplayMesh, "WeaponSocket");
 	DeactiveAttackCollision();
 
-	damage = 25.0f;
+	damage = 30.0f;
 }
 
 
@@ -155,6 +155,12 @@ void AWeaponItem::OnAttackCollisionOverlapBegin(UPrimitiveComponent* OverlappedC
 		ABaseEnemy* baseEnemy = Cast<ABaseEnemy>(OtherActor);
 		if (baseEnemy)
 		{
+			if(damagedArray.Contains(baseEnemy))
+			{
+				return;
+			}
+			damagedArray.Add(baseEnemy);
+			
 			if (baseEnemy->hitParticles)
 			{
 				USkeletalMeshComponent* sm = static_cast<USkeletalMeshComponent*>(DisplayMesh);
@@ -189,6 +195,7 @@ void AWeaponItem::ActiveAttackCollision()
 	attackCollision->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
 	attackCollision->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	attackCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+	damagedArray.Empty();
 }
 
 void AWeaponItem::DeactiveAttackCollision()

@@ -50,6 +50,8 @@ private:
 	// UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Weapon|Attack")
 	class AController* weaponOwner;
 
+	TSet<class ABaseEnemy*> damagedArray;
+	
 public:
 	virtual void OnPickOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	                                UPrimitiveComponent* OtherComp,

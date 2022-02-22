@@ -66,6 +66,7 @@ AMainPlayer::AMainPlayer()
 	attackTarget = nullptr;
 	interpSpeed = 15.0f;
 	bInterpToEnemy = false;
+
 }
 
 // Called when the game starts or when spawned
@@ -293,6 +294,7 @@ float AMainPlayer::TakeDamage(float DamageAmount, FDamageEvent const& DamageEven
 	if (health - DamageAmount <= 0)
 	{
 		health = FMath::Min(health - DamageAmount, 0.0f);
+		Die();
 	}
 	else
 	{
@@ -300,6 +302,10 @@ float AMainPlayer::TakeDamage(float DamageAmount, FDamageEvent const& DamageEven
 	}
 
 	return health;
+}
+
+void AMainPlayer::Die()
+{
 }
 
 void AMainPlayer::SetMovementStatus(EPlayerMovementStatus status)

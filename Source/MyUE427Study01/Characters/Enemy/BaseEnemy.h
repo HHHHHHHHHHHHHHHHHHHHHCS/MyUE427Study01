@@ -6,6 +6,7 @@
 #include "Components/BoxComponent.h"
 #include "Components/ProgressBar.h"
 #include "GameFramework/Character.h"
+#include "MyUE427Study01/Characters/Player/MainPlayer.h"
 #include "BaseEnemy.generated.h"
 
 UENUM(BlueprintType)
@@ -80,7 +81,8 @@ public:
 
 private:
 	class UProgressBar* healthBar;
-
+	TSet<AMainPlayer*> damagedSet;
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -151,4 +153,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void DeactiveRightAttackCollision();
+
+	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+
+	void Die();
 };

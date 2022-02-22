@@ -152,6 +152,8 @@ public:
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
 	                         AActor* DamageCauser) override;
 
+	void Die();
+
 	FORCEINLINE void LeftShiftKeyDown() { bLeftShiftKeyDown = true; }
 
 	FORCEINLINE void LeftShiftKeyUp() { bLeftShiftKeyDown = false; }
@@ -182,4 +184,5 @@ public:
 	void AttackEnd();
 
 	void UpdateAttackTarget();
+
 };

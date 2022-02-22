@@ -191,6 +191,14 @@ void ABaseEnemy::OnLeftAttackCollisionOverlapBegin(UPrimitiveComponent* Overlapp
 		AMainPlayer* mainPlayer = Cast<AMainPlayer>(OtherActor);
 		if (mainPlayer)
 		{
+			if(damagedSet.Contains(mainPlayer))
+			{
+				return;
+			}
+			
+			damagedSet.Add(mainPlayer);
+
+			
 			if (mainPlayer->hitParticles)
 			{
 				USkeletalMeshComponent* mesh = GetMesh();
@@ -198,7 +206,8 @@ void ABaseEnemy::OnLeftAttackCollisionOverlapBegin(UPrimitiveComponent* Overlapp
 				if (attackSocket)
 				{
 					const FVector socketLocation = attackSocket->GetSocketLocation(mesh);
-					UGameplayStatics::SpawnEmitterAtLocation(this, mainPlayer->hitParticles, socketLocation,FRotator(0.0f));
+					UGameplayStatics::SpawnEmitterAtLocation(this, mainPlayer->hitParticles, socketLocation,
+					                                         FRotator(0.0f));
 				}
 			}
 			if (mainPlayer->hitSound)
@@ -223,30 +232,38 @@ void ABaseEnemy::OnRightAttackCollisionOverlapBegin(UPrimitiveComponent* Overlap
                                                     bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (OtherActor)
-    	{
-    		AMainPlayer* mainPlayer = Cast<AMainPlayer>(OtherActor);
-    		if (mainPlayer)
-    		{
-    			if (mainPlayer->hitParticles)
-    			{
-    				USkeletalMeshComponent* mesh = GetMesh();
-    				const USkeletalMeshSocket* attackSocket = mesh->GetSocketByName("RightAttackSocket");
-    				if (attackSocket)
-    				{
-    					const FVector socketLocation = attackSocket->GetSocketLocation(mesh);
-    					UGameplayStatics::SpawnEmitterAtLocation(this, mainPlayer->hitParticles, socketLocation,FRotator(0.0f));
-    				}
-    			}
-    			if (mainPlayer->hitSound)
-    			{
-    				UGameplayStatics::PlaySound2D(this, mainPlayer->hitSound);
-    			}
-    			if (damageTypeClass)
-    			{
-    				UGameplayStatics::ApplyDamage(mainPlayer, damage, AIController, this, damageTypeClass);
-    			}
-    		}
-    	}
+	{
+		AMainPlayer* mainPlayer = Cast<AMainPlayer>(OtherActor);
+		if (mainPlayer)
+		{
+			if(damagedSet.Contains(mainPlayer))
+			{
+				return;
+			}
+			
+			damagedSet.Add(mainPlayer);
+			
+			if (mainPlayer->hitParticles)
+			{
+				USkeletalMeshComponent* mesh = GetMesh();
+				const USkeletalMeshSocket* attackSocket = mesh->GetSocketByName("RightAttackSocket");
+				if (attackSocket)
+				{
+					const FVector socketLocation = attackSocket->GetSocketLocation(mesh);
+					UGameplayStatics::SpawnEmitterAtLocation(this, mainPlayer->hitParticles, socketLocation,
+					                                         FRotator(0.0f));
+				}
+			}
+			if (mainPlayer->hitSound)
+			{
+				UGameplayStatics::PlaySound2D(this, mainPlayer->hitSound);
+			}
+			if (damageTypeClass)
+			{
+				UGameplayStatics::ApplyDamage(mainPlayer, damage, AIController, this, damageTypeClass);
+			}
+		}
+	}
 }
 
 void ABaseEnemy::OnRightAttackCollisionOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -290,6 +307,8 @@ void ABaseEnemy::Attack()
 		UAnimInstance* animInstance = GetMesh()->GetAnimInstance();
 		if (animInstance && attackMontage)
 		{
+			damagedSet.Empty();
+
 			float playRate = FMath::RandRange(0.9f, 1.1f);
 			FString sectionName = FString::FromInt(FMath::RandRange(1, 3));
 			animInstance->Montage_Play(attackMontage, playRate);
@@ -332,4 +351,22 @@ void ABaseEnemy::ActiveRightAttackCollision()
 void ABaseEnemy::DeactiveRightAttackCollision()
 {
 	rightAttackCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+float ABaseEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
+                             AActor* DamageCauser)
+{
+	health = FMath::Clamp(health - DamageAmount, 0.0f, maxHealth);
+	if(health<=0)
+	{
+		Die();
+	}
+
+	healthBar->SetPercent(health / maxHealth);
+
+	return health;
+}
+
+void ABaseEnemy::Die()
+{
 }
