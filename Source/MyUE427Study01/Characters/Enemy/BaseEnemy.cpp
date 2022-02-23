@@ -94,6 +94,11 @@ void ABaseEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if(!IsAlive())
+	{
+		return;
+	}
+	
 	if (bInterpToPlayer)
 	{
 		const FVector playerLocation = UGameplayStatics::GetPlayerPawn(this, 0)->GetActorLocation();
@@ -191,14 +196,14 @@ void ABaseEnemy::OnLeftAttackCollisionOverlapBegin(UPrimitiveComponent* Overlapp
 		AMainPlayer* mainPlayer = Cast<AMainPlayer>(OtherActor);
 		if (mainPlayer)
 		{
-			if(damagedSet.Contains(mainPlayer))
+			if (damagedSet.Contains(mainPlayer))
 			{
 				return;
 			}
-			
+
 			damagedSet.Add(mainPlayer);
 
-			
+
 			if (mainPlayer->hitParticles)
 			{
 				USkeletalMeshComponent* mesh = GetMesh();
@@ -236,13 +241,13 @@ void ABaseEnemy::OnRightAttackCollisionOverlapBegin(UPrimitiveComponent* Overlap
 		AMainPlayer* mainPlayer = Cast<AMainPlayer>(OtherActor);
 		if (mainPlayer)
 		{
-			if(damagedSet.Contains(mainPlayer))
+			if (damagedSet.Contains(mainPlayer))
 			{
 				return;
 			}
-			
+
 			damagedSet.Add(mainPlayer);
-			
+
 			if (mainPlayer->hitParticles)
 			{
 				USkeletalMeshComponent* mesh = GetMesh();
@@ -319,8 +324,14 @@ void ABaseEnemy::Attack()
 
 void ABaseEnemy::AttackEnd()
 {
-	EnemyMovementStatus = EEnemyMovementStatus::EEMS_Idle;
 	bInterpToPlayer = false;
+
+	if(!IsAlive())
+	{
+		return;
+	}
+	
+	EnemyMovementStatus = EEnemyMovementStatus::EEMS_Idle;
 	if (bAttackVolumeOverlapping)
 	{
 		Attack();
@@ -357,7 +368,7 @@ float ABaseEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent
                              AActor* DamageCauser)
 {
 	health = FMath::Clamp(health - DamageAmount, 0.0f, maxHealth);
-	if(health<=0)
+	if (health <= 0)
 	{
 		Die();
 	}
@@ -369,4 +380,17 @@ float ABaseEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent
 
 void ABaseEnemy::Die()
 {
+	EnemyMovementStatus = EEnemyMovementStatus::EEMS_Dead;
+	DeactiveLeftAttackCollision();
+	DeactiveRightAttackCollision();
+	ChaseVolume->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	AttackVolume->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	Cast<AMainPlayer>(UGameplayStatics::GetPlayerPawn(this, 0))->UpdateAttackTarget();
+}
+
+bool ABaseEnemy::HasValidTarget()
+{
+	return Cast<AMainPlayer>(UGameplayStatics::GetPlayerPawn(this,0))->IsAlive();
 }

@@ -80,6 +80,12 @@ void AMainPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if(!IsAlive())
+	{
+		return;
+	}
+	
+
 	switch (staminaStatus)
 	{
 	case EPlayerStaminaStatus::EPSS_Normal:
@@ -173,6 +179,11 @@ void AMainPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 void AMainPlayer::MoveForward(float value)
 {
+	if(!IsAlive())
+	{
+		return;
+	}
+	
 	if (bIsAttacking)
 	{
 		return;
@@ -192,6 +203,11 @@ void AMainPlayer::MoveForward(float value)
 
 void AMainPlayer::MoveRight(float value)
 {
+	if(!IsAlive())
+	{
+		return;
+	}
+	
 	if (Controller == nullptr || value == 0)
 	{
 		return;
@@ -213,7 +229,10 @@ void AMainPlayer::Turn(float value)
 
 void AMainPlayer::LookUp(float value)
 {
-	// UE_LOG(LogTemp, Warning, TEXT("%f,,,,%f"), GetControlRotation().Pitch, value);
+	if(!IsAlive())
+	{
+		return;
+	}
 
 	float pitch = GetControlRotation().Pitch;
 
@@ -247,6 +266,11 @@ void AMainPlayer::LookUp(float value)
 
 void AMainPlayer::TurnAtRate(float rate)
 {
+	if(!IsAlive())
+	{
+		return;
+	}
+	
 	const float value = rate * baseTurnRate * GetWorld()->GetDeltaSeconds();
 	if (value != 0.0)
 	{
@@ -256,6 +280,11 @@ void AMainPlayer::TurnAtRate(float rate)
 
 void AMainPlayer::LookUpAtRate(float rate)
 {
+	if(!IsAlive())
+	{
+		return;
+	}
+	
 	const float value = rate * baseLookUpRate * GetWorld()->GetDeltaSeconds();
 	if (value != 0.0)
 	{
@@ -265,6 +294,11 @@ void AMainPlayer::LookUpAtRate(float rate)
 
 void AMainPlayer::Jump()
 {
+	if(!IsAlive())
+	{
+		return;
+	}
+	
 	if (bIsAttacking)
 	{
 		return;
@@ -291,6 +325,11 @@ void AMainPlayer::IncreaseCoin(int value)
 float AMainPlayer::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
                               AActor* DamageCauser)
 {
+	if(!IsAlive())
+	{
+		return health;
+	}
+	
 	if (health - DamageAmount <= 0)
 	{
 		health = FMath::Min(health - DamageAmount, 0.0f);
@@ -305,6 +344,15 @@ float AMainPlayer::TakeDamage(float DamageAmount, FDamageEvent const& DamageEven
 }
 
 void AMainPlayer::Die()
+{
+	SetMovementStatus(EPlayerMovementStatus::EPMS_Dead);
+	if(equippedWeapon)
+	{
+		equippedWeapon->DeactiveAttackCollision();
+	}
+}
+
+void AMainPlayer::DeathEnd()
 {
 }
 
@@ -324,6 +372,11 @@ void AMainPlayer::SetMovementStatus(EPlayerMovementStatus status)
 
 void AMainPlayer::InteractKeyDown()
 {
+	if(!IsAlive())
+	{
+		return;
+	}
+	
 	if (bIsAttacking || GetMovementComponent()->IsFalling())
 	{
 		return;
@@ -354,6 +407,11 @@ void AMainPlayer::InteractKeyDown()
 
 void AMainPlayer::EquipWeapon(AWeaponItem* weaponItem)
 {
+	if(!IsAlive())
+	{
+		return;
+	}
+	
 	bHasWeapon = true;
 	equippedWeapon = weaponItem;
 	overlappingWeapon = nullptr;
@@ -361,6 +419,11 @@ void AMainPlayer::EquipWeapon(AWeaponItem* weaponItem)
 
 void AMainPlayer::UnEquipWeapon(AWeaponItem* weaponItem)
 {
+	if(!IsAlive())
+	{
+		return;
+	}
+	
 	bHasWeapon = false;
 	equippedWeapon = nullptr;
 
@@ -372,6 +435,11 @@ void AMainPlayer::UnEquipWeapon(AWeaponItem* weaponItem)
 
 void AMainPlayer::AttackKeyDown()
 {
+	if(!IsAlive())
+	{
+		return;
+	}
+	
 	bAttackKeyDown = true;
 
 	if (bHasWeapon)
@@ -382,6 +450,11 @@ void AMainPlayer::AttackKeyDown()
 
 void AMainPlayer::Attack()
 {
+	if(!IsAlive())
+	{
+		return;
+	}
+	
 	if (!bIsAttacking && !GetMovementComponent()->IsFalling())
 	{
 		bIsAttacking = true;
@@ -411,6 +484,11 @@ void AMainPlayer::AttackEnd()
 
 void AMainPlayer::UpdateAttackTarget()
 {
+	if(!IsAlive())
+	{
+		return;
+	}
+	
 	TArray<AActor*> overlappingActors;
 	GetOverlappingActors(overlappingActors, enemyFilter);
 

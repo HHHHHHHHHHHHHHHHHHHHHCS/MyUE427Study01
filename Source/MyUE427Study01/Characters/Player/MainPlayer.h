@@ -154,6 +154,9 @@ public:
 
 	void Die();
 
+	UFUNCTION(BlueprintCallable)
+	void DeathEnd();
+
 	FORCEINLINE void LeftShiftKeyDown() { bLeftShiftKeyDown = true; }
 
 	FORCEINLINE void LeftShiftKeyUp() { bLeftShiftKeyDown = false; }
@@ -185,4 +188,5 @@ public:
 
 	void UpdateAttackTarget();
 
+	FORCEINLINE bool IsAlive() const { return movementStatus != EPlayerMovementStatus::EPMS_Dead; }
 };
