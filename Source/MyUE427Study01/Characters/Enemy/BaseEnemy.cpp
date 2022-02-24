@@ -94,11 +94,11 @@ void ABaseEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if(!IsAlive())
+	if (!IsAlive() || !HasValidTarget())
 	{
 		return;
 	}
-	
+
 	if (bInterpToPlayer)
 	{
 		const FVector playerLocation = UGameplayStatics::GetPlayerPawn(this, 0)->GetActorLocation();
@@ -119,6 +119,12 @@ void ABaseEnemy::OnChaseVolumeOverlapBegin(UPrimitiveComponent* OverlappedCompon
                                            UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
                                            const FHitResult& SweepResult)
 {
+	if (!IsAlive())
+	{
+		return;
+	}
+
+
 	if (OtherActor)
 	{
 		AMainPlayer* mainPlayer = Cast<AMainPlayer>(OtherActor);
@@ -134,6 +140,11 @@ void ABaseEnemy::OnChaseVolumeOverlapBegin(UPrimitiveComponent* OverlappedCompon
 void ABaseEnemy::OnChaseVolumeOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                                          UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
+	if (!IsAlive())
+	{
+		return;
+	}
+
 	if (OtherActor)
 	{
 		AMainPlayer* mainPlayer = Cast<AMainPlayer>(OtherActor);
@@ -155,6 +166,11 @@ void ABaseEnemy::OnAttackVolumeOverlapBegin(UPrimitiveComponent* OverlappedCompo
                                             UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
                                             const FHitResult& SweepResult)
 {
+	if (!IsAlive())
+	{
+		return;
+	}
+
 	if (OtherActor)
 	{
 		// UE_LOG(LogTemp, Warning, TEXT("OnAttackVolumeOverlapBegin"));
@@ -171,6 +187,11 @@ void ABaseEnemy::OnAttackVolumeOverlapBegin(UPrimitiveComponent* OverlappedCompo
 void ABaseEnemy::OnAttackVolumeOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                                           UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
+	if (!IsAlive())
+	{
+		return;
+	}
+
 	if (OtherActor)
 	{
 		// UE_LOG(LogTemp, Warning, TEXT("OnAttackVolumeOverlapEnd"));
@@ -191,6 +212,11 @@ void ABaseEnemy::OnLeftAttackCollisionOverlapBegin(UPrimitiveComponent* Overlapp
                                                    UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
                                                    bool bFromSweep, const FHitResult& SweepResult)
 {
+	if (!IsAlive())
+	{
+		return;
+	}
+
 	if (OtherActor)
 	{
 		AMainPlayer* mainPlayer = Cast<AMainPlayer>(OtherActor);
@@ -236,6 +262,11 @@ void ABaseEnemy::OnRightAttackCollisionOverlapBegin(UPrimitiveComponent* Overlap
                                                     UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
                                                     bool bFromSweep, const FHitResult& SweepResult)
 {
+	if (!IsAlive())
+	{
+		return;
+	}
+
 	if (OtherActor)
 	{
 		AMainPlayer* mainPlayer = Cast<AMainPlayer>(OtherActor);
@@ -278,6 +309,11 @@ void ABaseEnemy::OnRightAttackCollisionOverlapEnd(UPrimitiveComponent* Overlappe
 
 void ABaseEnemy::MoveToTarget(AMainPlayer* targetPlayer)
 {
+	if (!IsAlive())
+	{
+		return;
+	}
+
 	EnemyMovementStatus = EEnemyMovementStatus::EEMS_MoveToTarget;
 	if (AIController)
 	{
@@ -298,6 +334,11 @@ void ABaseEnemy::MoveToTarget(AMainPlayer* targetPlayer)
 
 void ABaseEnemy::Attack()
 {
+	if (!IsAlive() || !HasValidTarget())
+	{
+		return;
+	}
+
 	if (AIController)
 	{
 		AIController->StopMovement();
@@ -326,11 +367,11 @@ void ABaseEnemy::AttackEnd()
 {
 	bInterpToPlayer = false;
 
-	if(!IsAlive())
+	if (!IsAlive())
 	{
 		return;
 	}
-	
+
 	EnemyMovementStatus = EEnemyMovementStatus::EEMS_Idle;
 	if (bAttackVolumeOverlapping)
 	{
@@ -367,6 +408,11 @@ void ABaseEnemy::DeactiveRightAttackCollision()
 float ABaseEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
                              AActor* DamageCauser)
 {
+	if (!IsAlive())
+	{
+		return 0;
+	}
+
 	health = FMath::Clamp(health - DamageAmount, 0.0f, maxHealth);
 	if (health <= 0)
 	{
@@ -380,6 +426,11 @@ float ABaseEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent
 
 void ABaseEnemy::Die()
 {
+	if (!IsAlive())
+	{
+		return;
+	}
+
 	EnemyMovementStatus = EEnemyMovementStatus::EEMS_Dead;
 	DeactiveLeftAttackCollision();
 	DeactiveRightAttackCollision();
@@ -392,5 +443,5 @@ void ABaseEnemy::Die()
 
 bool ABaseEnemy::HasValidTarget()
 {
-	return Cast<AMainPlayer>(UGameplayStatics::GetPlayerPawn(this,0))->IsAlive();
+	return Cast<AMainPlayer>(UGameplayStatics::GetPlayerPawn(this, 0))->IsAlive();
 }
