@@ -432,6 +432,9 @@ void ABaseEnemy::Die()
 	}
 
 	EnemyMovementStatus = EEnemyMovementStatus::EEMS_Dead;
+
+	healthBar->SetVisibility(ESlateVisibility::Hidden);
+	
 	DeactiveLeftAttackCollision();
 	DeactiveRightAttackCollision();
 	ChaseVolume->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -439,6 +442,20 @@ void ABaseEnemy::Die()
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	Cast<AMainPlayer>(UGameplayStatics::GetPlayerPawn(this, 0))->UpdateAttackTarget();
+}
+
+void ABaseEnemy::DeathEnd()
+{
+	GetMesh()->bPauseAnims = true;
+	GetMesh()->bNoSkeletonUpdate = true;
+
+	FTimerHandle deathTimerHandle;
+	auto lambda = [this]()
+	{
+		Destroy();
+	};
+	GetWorldTimerManager().SetTimer(deathTimerHandle, FTimerDelegate::CreateLambda(lambda), 1.0f, false);
+
 }
 
 bool ABaseEnemy::HasValidTarget()

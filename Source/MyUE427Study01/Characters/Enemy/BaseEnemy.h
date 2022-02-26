@@ -82,7 +82,7 @@ public:
 private:
 	class UProgressBar* healthBar;
 	TSet<AMainPlayer*> damagedSet;
-	
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -154,9 +154,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void DeactiveRightAttackCollision();
 
-	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
+	                         AActor* DamageCauser) override;
 
 	void Die();
+
+	UFUNCTION(BlueprintCallable)
+	void DeathEnd();
 
 	FORCEINLINE bool IsAlive() const { return EnemyMovementStatus != EEnemyMovementStatus::EEMS_Dead; }
 
