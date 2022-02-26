@@ -189,4 +189,6 @@ public:
 	void UpdateAttackTarget();
 
 	FORCEINLINE bool IsAlive() const { return movementStatus != EPlayerMovementStatus::EPMS_Dead; }
+
+	void ReStartLevel() const;
 };

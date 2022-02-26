@@ -8,6 +8,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Animation/AnimInstance.h"
 #include "Animation/AnimMontage.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 
 #include "MyUE427Study01/Gameplay/WeaponItem.h"
@@ -358,8 +359,9 @@ void AMainPlayer::DeathEnd()
 	GetMesh()->bNoSkeletonUpdate = true;
 
 	FTimerHandle deathTimerHandle;
-	auto lambda = []()
+	const auto lambda = [this]()
 	{
+		ReStartLevel();
 	};
 	GetWorldTimerManager().SetTimer(deathTimerHandle, FTimerDelegate::CreateLambda(lambda), 1.0f, false);
 }
@@ -525,4 +527,10 @@ void AMainPlayer::UpdateAttackTarget()
 	}
 
 	attackTarget = closestEnemy;
+}
+
+void AMainPlayer::ReStartLevel() const
+{
+	FString levelName = UGameplayStatics::GetCurrentLevelName(this);
+	UGameplayStatics::OpenLevel(this, FName(*levelName));
 }
