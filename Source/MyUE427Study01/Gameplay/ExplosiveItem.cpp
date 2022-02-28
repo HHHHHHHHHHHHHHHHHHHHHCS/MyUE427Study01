@@ -7,6 +7,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
 
+#include "MyUE427Study01/Characters/Enemy/BaseEnemy.h"
 #include "MyUE427Study01/Characters/Player/MainPlayer.h"
 
 AExplosiveItem::AExplosiveItem()
@@ -16,14 +17,15 @@ AExplosiveItem::AExplosiveItem()
 }
 
 void AExplosiveItem::OnPickOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-                                    UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
-                                    const FHitResult& SweepResult)
+                                        UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
+                                        const FHitResult& SweepResult)
 {
 	Super::OnPickOverlapBegin(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
 	if (OtherActor)
 	{
 		const AMainPlayer* mainPlayer = Cast<AMainPlayer>(OtherActor);
-		if (mainPlayer)
+		const ABaseEnemy* baseEnemy = Cast<ABaseEnemy>(OtherActor);
+		if (mainPlayer || baseEnemy)
 		{
 			if (OverlapParticle)
 			{
@@ -34,8 +36,21 @@ void AExplosiveItem::OnPickOverlapBegin(UPrimitiveComponent* OverlappedComponent
 			{
 				UGameplayStatics::PlaySound2D(this, OverlapSound);
 			}
+			TSet<AActor*> mainplayers;
+			GetOverlappingActors(mainplayers, TSubclassOf<AMainPlayer>{});
 
-			UGameplayStatics::ApplyDamage(OtherActor, Damage, nullptr, this, DamageTypeClass);
+			for (auto& actor : mainplayers)
+			{
+				UGameplayStatics::ApplyDamage(actor, Damage, nullptr, this, DamageTypeClass);
+			}
+			
+			TSet<AActor*> enemys;
+			GetOverlappingActors(mainplayers, TSubclassOf<ABaseEnemy>{});
+
+			for (auto& actor : enemys)
+			{
+				UGameplayStatics::ApplyDamage(actor, Damage, nullptr, this, DamageTypeClass);
+			}
 
 			Destroy();
 		}
@@ -43,7 +58,7 @@ void AExplosiveItem::OnPickOverlapBegin(UPrimitiveComponent* OverlappedComponent
 }
 
 void AExplosiveItem::OnPickOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-                                  UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+                                      UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	Super::OnPickOverlapEnd(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex);
 }
